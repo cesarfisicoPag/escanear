@@ -505,23 +505,6 @@
             </div>
         </div>
 
-        <div class="section">
-            <div class="question-display" id="questionDisplay">
-                <div class="question-text" id="displayQuestionText">No hay pregunta seleccionada</div>
-                <div class="options-container" id="displayOptions">
-                    <!-- Las opciones se mostrarán aquí -->
-                </div>
-            </div>
-
-            <!-- Control deslizante para el tamaño de fuente -->
-            <div class="font-size-control">
-                <label for="fontSizeSlider">Tamaño de letra:</label>
-                <div class="font-size-slider-container">
-                    <input type="range" id="fontSizeSlider" class="font-size-slider" min="12" max="36" value="16">
-                    <span id="fontSizeValue" class="font-size-value">16px</span>
-                </div>
-            </div>
-
             <div class="question-nav-container">
                 <div class="question-nav-buttons">
                     <button id="prevQuestionBtn" class="secondary">← Anterior</button>
@@ -532,12 +515,28 @@
                 </div>
             </div>
         </div>
+<!-- Control deslizante para el tamaño de fuente -->
+            <div class="font-size-control">
+                <label for="fontSizeSlider">Tamaño de letra:</label>
+                <div class="font-size-slider-container">
+                    <input type="range" id="fontSizeSlider" class="font-size-slider" min="12" max="36" value="16">
+                    <span id="fontSizeValue" class="font-size-value">16px</span>
+                </div>
+            </div>
         
+        <div class="section">
+            <div class="question-display" id="questionDisplay">
+                <div class="question-text" id="displayQuestionText">No hay pregunta seleccionada</div>
+                <div class="options-container" id="displayOptions">
+                    <!-- Las opciones se mostrarán aquí -->
+                </div>
+            </div>
         <div id="multiResult" class="multi-result" style="display: none;">
             <h3>Respuestas Detectadas:</h3>
             <div id="detectedResponses"></div>
         </div>
 
+            
         <div class="section">
             <h3>Estudiantes Registrados</h3>
             <div class="student-list" id="studentList"></div>
