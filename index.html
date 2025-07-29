@@ -1,501 +1,1848 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Avanzado de Hojas de Respuesta</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fichas_CAL Reader</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        /* Login styles */
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
         }
-        .section {
+        
+        .login-container h1 {
+            color: #4285F4;
             margin-bottom: 20px;
-            padding: 15px;
+        }
+        
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            font-size: 16px;
+            box-sizing: border-box;
         }
-        button {
-            padding: 10px 15px;
-            background-color: #4CAF50;
+        
+        .login-button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4285F4;
             color: white;
             border: none;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            margin: 5px;
+        }
+        
+        .login-button:hover {
+            background-color: #3367D6;
+        }
+        
+        .login-error {
+            color: #d32f2f;
+            margin-top: 10px;
+            display: none;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            background-color: #f0f0f0;
+            font-size: 14px;
+        }
+        .section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #4285F4;
+            margin-top: 0;
+            font-size: 1.3em;
+        }
+        h3 {
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+        .input-group {
+            margin-bottom: 12px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 8px 12px;
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            width: 100%;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #3367D6;
         }
         button.secondary {
-            background-color: #2196F3;
+            background-color: #f0f0f0;
+            color: #333;
         }
-        button.danger {
-            background-color: #f44336;
-        }
-        /* Estilo para las hojas de respuesta */
-        .answer-sheet {
-            width: 90mm;
-            height: 135mm;
-            margin: 5px;
-            padding: 5mm;
-            box-sizing: border-box;
-            border: 1px dashed #ccc;
-            display: inline-block;
-            vertical-align: top;
+        .video-container {
             position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
         }
-        .sheet-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 5px;
-            margin-bottom: 20px;
+        #video {
+            width: 100%;
+            border-radius: 8px;
+            display: block;
         }
-        @media print {
-            .no-print {
-                display: none;
-            }
-            .sheet-container {
-                grid-template-columns: repeat(2, 1fr);
-                page-break-after: always;
-            }
-            .answer-sheet {
-                border: 1px solid #000;
-                height: 135mm;
-                page-break-inside: avoid;
-            }
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 5px;
-            font-size: 12px;
-        }
-        .student-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 5px;
-            font-size: 10px;
-        }
-        .qr-code {
-            width: 30px;
-            height: 30px;
-        }
-        .questions-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 2px;
-            font-size: 9px;
-        }
-        .question {
-            display: flex;
-            align-items: center;
-        }
-        .question-number {
-            margin-right: 2px;
-            min-width: 12px;
-        }
-        .answer-circle {
-            width: 12px;
-            height: 12px;
-            border: 1px solid #000;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 1px;
-            font-size: 8px;
-        }
-        /* Estilo para el escáner */
-        #scanner-container {
-            position: fixed;
+        #canvas {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.8);
-            z-index: 1000;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        #scanner-video {
-            width: 80%;
-            max-width: 500px;
-        }
-        #scanner-canvas {
             display: none;
         }
-        /* Estadísticas */
-        .stats-table {
+        .qr-result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f0fe;
+            border-radius: 5px;
+            display: none;
+        }
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 12px;
+            font-size: 13px;
         }
-        .stats-table th, .stats-table td {
+        th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 6px;
             text-align: left;
         }
-        .stats-table th {
+        th {
             background-color: #f2f2f2;
         }
-        .correct {
-            background-color: #dff0d8;
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
         }
-        .incorrect {
-            background-color: #f2dede;
+        .student-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .student-item {
+            padding: 6px 10px;
+            background-color: #e8f0fe;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+        }
+        .student-item.responded {
+            display: none;
+        }
+        .student-item.missing {
+            background-color: #ffebee;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .stats-box {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .stats-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4285F4;
+        }
+        #currentQuestion {
+            font-weight: bold;
+            margin: 12px 0;
+            padding: 8px;
+            background-color: #e8f0fe;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        .missing-title {
+            color: #d32f2f;
+            margin-top: 15px;
+        }
+        .student-grades {
+            margin-top: 15px;
+        }
+        .student-grade-item {
+            display: flex;
+            flex-direction: column;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        .student-grade-item:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .grade-value {
+            font-weight: bold;
+        }
+        .usea {
+            background-color: #ffebee;
+            color: #d32f2f;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 15px;
+            font-weight: bold;
+            display: none;
+        }
+        .multi-result {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f0fe;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        .detected-response {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: #d1e7ff;
+            border-radius: 3px;
+        }
+        .question-nav-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            background-color: #f8f9fa;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        .question-nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            width: 100%;
+        }
+        .question-nav-buttons button {
+            flex: 1;
+            min-width: 120px;
+        }
+        .question-display {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .options-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            background-color: #e8f0fe;
+            border-radius: 5px;
+        }
+        .option-letter {
+            font-weight: bold;
+            margin-right: 8px;
+            width: 20px;
+            text-align: center;
+        }
+        .option-text {
+            flex-grow: 1;
+        }
+        .answer-radio {
+            margin-left: 8px;
+        }
+        .answer-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .answer-option {
+            display: flex;
+            align-items: center;
+        }
+        .question-info {
+            padding: 8px;
+            background-color: #e8f0fe;
+            border-radius: 5px;
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+        .grades-header {
+            font-weight: bold;
+            background-color: #f2f2f2;
+        }
+        .font-size-control {
+            margin: 12px 0;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        .font-size-slider-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .font-size-slider {
+            flex-grow: 1;
+        }
+        .font-size-value {
+            width: 40px;
+            text-align: center;
+        }
+        .qr-grid-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            border: 2px solid rgba(255, 0, 0, 0.5);
+        }
+        .qr-grid-cell {
+            border: 1px solid rgba(0, 0, 255, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: bold;
+            font-size: 10px;
+        }
+        .zoom-controls {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .zoom-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            border: none;
+        }
+        .highlight-top {
+            background-color: #e8f5e9 !important;
+        }
+        .highlight-bottom {
+            background-color: #ffebee !important;
+        }
+        .grade-progress {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .progress-bar {
+            flex-grow: 1;
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #4285F4;
+            width: 0%;
+        }
+        .qr-code-number {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            z-index: 11;
+        }
+        .import-section {
+            margin-bottom: 15px;
+        }
+        .create-question-section {
+            margin-top: 15px;
+        }
+        .qr-highlight {
+            position: absolute;
+            border: 4px solid #4285F4;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(66, 133, 244, 0.8);
+            display: none;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(66, 133, 244, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(66, 133, 244, 0); }
+        }
+        .qr-detected {
+            position: absolute;
+            background-color: rgba(66, 133, 244, 0.3);
+            border-radius: 8px;
+            z-index: 9;
+            pointer-events: none;
+        }
+        /* Nuevo estilo para mostrar la respuesta detectada */
+        .detected-response-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 20;
+        }
+        .detected-response-overlay.show {
+            opacity: 1;
+        }
+        @media (min-width: 768px) {
+            .options-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .stats-container {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+            .student-section {
+                display: flex;
+                gap: 15px;
+            }
+            .student-column {
+                flex: 1;
+            }
+            button {
+                width: auto;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Sistema Avanzado de Hojas de Respuesta</h1>
-    
-    <!-- Configuración del examen -->
-    <div class="section">
-        <h2>Configuración del Examen</h2>
-        <label for="exam-title">Título del Examen:</label>
-        <input type="text" id="exam-title" value="Examen Final"><br><br>
+    <div id="loginContainer" class="login-container">
+        <h1>Fichas_CAL Reader</h1>
+        <input type="text" id="username" class="login-input" placeholder="Usuario" required>
+        <input type="password" id="password" class="login-input" placeholder="Contraseña" required>
+        <button id="loginButton" class="login-button">Ingresar</button>
+        <div id="loginError" class="login-error">Usuario o contraseña incorrectos</div>
+    </div>
+
+    <div id="appContent" style="display: none;">
+        <div class="section">
+            <h1>CAL_ifi_CAL</h1>
+            <p>Cesarfisico 3219925086.</p>
+        </div>
         
-        <label for="total-questions">Número de Preguntas:</label>
-        <input type="number" id="total-questions" min="1" value="20"><br><br>
+        <div class="section">
+            <h2>Importar Archivos</h2>
+            <div class="import-section">
+                <h3>Preguntas</h3>
+                <input type="file" id="questionsFile" accept=".csv">
+                <label for="questionsFile">Preguntas.CSV (pregunta,a,b,c,d,correcta):</label>
+                <button id="importQuestionsBtn">Importar Preguntas</button>
+            </div>
+            
+            <div class="import-section">
+                <h3>Estudiantes</h3>
+                <input type="file" id="studentsFile" accept=".csv">
+                <label for="studentsFile">Estudiantes.CSV (ID,Nombre):</label>
+                <button id="importStudentsBtn">Importar Estudiantes</button>
+            </div>
+            
+            <div class="create-question-section">
+                <h2>Crear Pregunta</h2>
+                <div class="input-group">
+                    <label for="questionText">Pregunta:</label>
+                    <textarea id="questionText" rows="3"></textarea>
+                </div>
+                <div class="input-group">
+                    <label>Opciones de respuesta:</label>
+                    <div class="options-container">
+                        <div class="option-item">
+                            <span class="option-letter">A</span>
+                            <input type="text" id="optionA" class="option-text" placeholder="Opción A">
+                        </div>
+                        <div class="option-item">
+                            <span class="option-letter">B</span>
+                            <input type="text" id="optionB" class="option-text" placeholder="Opción B">
+                        </div>
+                        <div class="option-item">
+                            <span class="option-letter">C</span>
+                            <input type="text" id="optionC" class="option-text" placeholder="Opción C">
+                        </div>
+                        <div class="option-item">
+                            <span class="option-letter">D</span>
+                            <input type="text" id="optionD" class="option-text" placeholder="Opción D">
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Respuesta Correcta:</label>
+                    <div class="answer-options">
+                        <label class="answer-option">
+                            <input type="radio" name="correctAnswer" value="A" checked> A
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="correctAnswer" value="B"> B
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="correctAnswer" value="C"> C
+                        </label>
+                        <label class="answer-option">
+                            <input type="radio" name="correctAnswer" value="D"> D
+                        </label>
+                    </div>
+                </div>
+                <button id="addQuestionBtn">Agregar Pregunta</button>
+                <button id="deleteQuestionBtn">Eliminar Pregunta Actual</button>
+            </div>
+        </div>
+
+            <div class="question-nav-container">
+                <div class="question-nav-buttons">
+                    <button id="prevQuestionBtn" class="secondary">← Anterior</button>
+                    <button id="nextQuestionBtn" class="secondary">Siguiente →</button>
+                    <button id="startScannerBtn">Iniciar Escáner</button>
+                    <button id="stopScannerBtn">Detener Escáner</button>
+                    <button id="randomizeQuestionsBtn">Aleatorizar Preguntas</button>
+                </div>
+            </div>
+        </div>
+<!-- Control deslizante para el tamaño de fuente -->
+            <div class="font-size-control">
+                <label for="fontSizeSlider">Tamaño de letra:</label>
+                <div class="font-size-slider-container">
+                    <input type="range" id="fontSizeSlider" class="font-size-slider" min="12" max="36" value="16">
+                    <span id="fontSizeValue" class="font-size-value">16px</span>
+                </div>
+            </div>
         
-        <label>Respuestas Correctas (separadas por comas, ej: A,B,C,D,A...):</label><br>
-        <textarea id="correct-answers" rows="3" cols="50">A,B,C,D,A,B,C,D,A,B,C,D,A,B,C,D,A,B,C,D</textarea>
-    </div>
-    
-    <!-- Listado de estudiantes -->
-    <div class="section">
-        <h2>Listado de Estudiantes</h2>
-        <label>Nombres de Estudiantes (uno por línea):</label><br>
-        <textarea id="student-names" rows="5" cols="50">Juan Pérez
-María García
-Carlos López
-Ana Martínez</textarea>
-    </div>
-    
-    <!-- Controles principales -->
-    <div class="section no-print">
-        <button onclick="generateSheets()">Generar Hojas</button>
-        <button onclick="window.print()">Imprimir Hojas</button>
-        <button class="secondary" onclick="startScanner()">Escanear Respuestas</button>
-        <button class="secondary" onclick="showStats()">Mostrar Estadísticas</button>
-        <button class="secondary" onclick="exportToCSV()">Exportar a CSV</button>
-    </div>
-    
-    <!-- Contenedor de hojas de respuesta -->
-    <div id="sheets-container" class="sheet-container"></div>
-    
-    <!-- Contenedor del escáner -->
-    <div id="scanner-container">
-        <video id="scanner-video"></video>
-        <canvas id="scanner-canvas"></canvas>
-        <button class="danger" onclick="stopScanner()" style="margin-top: 20px;">Detener Escaneo</button>
-    </div>
-    
-    <!-- Sección de estadísticas -->
-    <div id="stats-section" class="section" style="display: none;">
-        <h2>Estadísticas del Examen</h2>
-        <div id="stats-content"></div>
+        <div class="section">
+            <div class="question-display" id="questionDisplay">
+                <div class="question-text" id="displayQuestionText">No hay pregunta seleccionada</div>
+                <div class="options-container" id="displayOptions">
+                    <!-- Las opciones se mostrarán aquí -->
+                </div>
+            </div>
+        <div id="multiResult" class="multi-result" style="display: none;">
+            <h3>Respuestas Detectadas:</h3>
+            <div id="detectedResponses"></div>
+        </div>
+
+            
+        <div class="section">
+            <h3>Estudiantes Registrados</h3>
+            <div class="student-list" id="studentList"></div>
+        </div>
+        
+        <div class="section">
+            <h3 class="missing-title">Estudiantes Faltantes por Responder</h3>
+            <div class="student-list" id="missingStudentsList"></div>
+        </div>
+        
+        <div class="section">
+            <h3>Calificaciones por Estudiante</h3>
+            <div class="student-grades" id="studentGrades"></div>
+        </div>
+        
+        <div class="question-info">
+            <strong>Pregunta actual:</strong> <span id="currentQuestionText"></span><br>
+            <strong>Respuesta correcta:</strong> <span id="correctAnswerDisplay"></span>
+        </div>
+        
+        <div class="section">
+            <h2>Lectura de Respuestas</h2>
+            <div class="video-container">
+                <video id="video" playsinline></video>
+                <canvas id="canvas"></canvas>
+                <div id="qrHighlight" class="qr-highlight"></div>
+                <div id="qrDetected" class="qr-detected" style="display: none;"></div>
+                <div id="qrGridOverlay" class="qr-grid-overlay" style="display: none;">
+                    <!-- Las celdas de la cuadrícula se generarán dinámicamente -->
+                </div>
+                <div class="zoom-controls" id="zoomControls" style="display: none;">
+                    <button class="zoom-btn" id="zoomInBtn">+</button>
+                    <button class="zoom-btn" id="zoomOutBtn">-</button>
+                </div>
+                <div id="qrCodeNumber" class="qr-code-number" style="display: none;"></div>
+                <!-- Nuevo elemento para mostrar la respuesta detectada -->
+                <div class="detected-response-overlay" id="detectedResponse"></div>
+            </div>
+            <button id="toggleGridBtn">Mostrar/Ocultar Cuadrícula</button>
+            <button id="toggleZoomBtn">Mostrar/Ocultar Zoom</button>
+        </div>
+        
+        <div class="section">
+            <h2>Lista de preguntas</h2>
+            <table id="questionsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Pregunta</th>
+                        <th>Respuesta Correcta</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>Estadísticas</h2>
+            <div class="stats-container">
+                <div class="stats-box">
+                    <div class="stats-value" id="totalStudents">0</div>
+                    <div>Total Estudiantes</div>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-value" id="respondedStudents">0</div>
+                    <div>Han Respondido</div>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-value" id="correctAnswers">0</div>
+                    <div>Correctas</div>
+                </div>
+                <div class="stats-box">
+                    <div class="stats-value" id="averageScore">0.0</div>
+                    <div>Promedio</div>
+                </div>
+            </div>
+
+            <h3>Respuestas por Opción</h3>
+            <table id="answersTable">
+                <thead>
+                    <tr>
+                        <th>Opción</th>
+                        <th>Cantidad</th>
+                        <th>Porcentaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>A</td>
+                        <td id="countA">0</td>
+                        <td id="percentA">0%</td>
+                    </tr>
+                    <tr>
+                        <td>B</td>
+                        <td id="countB">0</td>
+                        <td id="percentB">0%</td>
+                    </tr>
+                    <tr>
+                        <td>C</td>
+                        <td id="countC">0</td>
+                        <td id="percentC">0%</td>
+                    </tr>
+                    <tr>
+                        <td>D</td>
+                        <td id="countD">0</td>
+                        <td id="percentD">0%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>Exportar Resultados</h2>
+            <button id="exportResultsBtn">Exportar a CSV</button>
+        </div>
     </div>
 
     <script>
-        // Variables globales
-        let examData = {
-            title: "",
-            totalQuestions: 0,
-            correctAnswers: [],
-            students: [],
-            scannedResults: []
+        // Credenciales válidas (en un entorno real, esto debería estar en el servidor)
+        const validCredentials = {
+            "admin": "fichascal123",  // Usuario: admin, Contraseña: fichascal123
+            "profesor": "calificaciones321"  // Usuario: profesor, Contraseña: calificaciones321
         };
-        
-        // Inicializar al cargar la página
-        window.onload = function() {
-            generateSheets();
+
+        // Elementos de login
+        const loginElements = {
+            container: document.getElementById('loginContainer'),
+            username: document.getElementById('username'),
+            password: document.getElementById('password'),
+            button: document.getElementById('loginButton'),
+            error: document.getElementById('loginError')
         };
-        
-        // Generar hojas de respuesta
-        function generateSheets() {
-            const container = document.getElementById('sheets-container');
-            container.innerHTML = '';
+
+        // Función para manejar el login
+        function handleLogin() {
+            const username = loginElements.username.value.trim();
+            const password = loginElements.password.value.trim();
             
-            examData.title = document.getElementById('exam-title').value;
-            examData.totalQuestions = parseInt(document.getElementById('total-questions').value);
-            examData.correctAnswers = document.getElementById('correct-answers').value
-                .split(',')
-                .map(a => a.trim().toUpperCase())
-                .slice(0, examData.totalQuestions);
+            if (!username || !password) {
+                loginElements.error.textContent = "Por favor ingrese usuario y contraseña";
+                loginElements.error.style.display = "block";
+                return;
+            }
             
-            const studentNames = document.getElementById('student-names').value.split('\n');
-            examData.students = studentNames
-                .filter(name => name.trim() !== '')
-                .map((name, index) => ({
-                    id: index + 1,
-                    name: name.trim(),
-                    qrData: `ESTUDIANTE:${name.trim()}|ID:${index + 1}`
-                }));
+            if (validCredentials[username] && validCredentials[username] === password) {
+                // Login exitoso
+                loginElements.container.style.display = "none";
+                document.getElementById('appContent').style.display = "block";
+                
+                // Guardar sesión en localStorage
+                localStorage.setItem('isAuthenticated', 'true');
+                localStorage.setItem('username', username);
+                
+                // Iniciar la aplicación
+                initializeApp();
+            } else {
+                loginElements.error.textContent = "Usuario o contraseña incorrectos";
+                loginElements.error.style.display = "block";
+            }
+        }
+
+        // Verificar si ya está autenticado
+        function checkAuthentication() {
+            const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+            if (isAuthenticated) {
+                loginElements.container.style.display = "none";
+                document.getElementById('appContent').style.display = "block";
+                initializeApp();
+            }
+        }
+
+        // Event listener para el botón de login
+        loginElements.button.addEventListener('click', handleLogin);
+
+        // También permitir login con Enter
+        loginElements.password.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        // Variables de la aplicación
+        let questions = [];
+        let currentQuestionIndex = -1;
+        let students = [];
+        let responses = [];
+        let videoStream = null;
+        let scanning = false;
+        let animationFrameId = null;
+        let lastScanTime = 0;
+        const scanInterval = 300;
+
+        let currentFontSize = 16;
+        let showGrid = false;
+        let showZoom = false;
+        let currentZoom = 1;
+        const maxZoom = 3;
+        const minZoom = 1;
+        const zoomStep = 0.1;
+
+        const elements = {
+            questionText: document.getElementById('questionText'),
+            optionA: document.getElementById('optionA'),
+            optionB: document.getElementById('optionB'),
+            optionC: document.getElementById('optionC'),
+            optionD: document.getElementById('optionD'),
+            correctAnswer: document.querySelector('input[name="correctAnswer"]:checked'),
+            addQuestionBtn: document.getElementById('addQuestionBtn'),
+            deleteQuestionBtn: document.getElementById('deleteQuestionBtn'),
+            questionsFile: document.getElementById('questionsFile'),
+            importQuestionsBtn: document.getElementById('importQuestionsBtn'),
+            studentsFile: document.getElementById('studentsFile'),
+            importStudentsBtn: document.getElementById('importStudentsBtn'),
+            prevQuestionBtn: document.getElementById('prevQuestionBtn'),
+            nextQuestionBtn: document.getElementById('nextQuestionBtn'),
+            displayQuestionText: document.getElementById('displayQuestionText'),
+            displayOptions: document.getElementById('displayOptions'),
+            questionsTable: document.getElementById('questionsTable').querySelector('tbody'),
+            studentList: document.getElementById('studentList'),
+            missingStudentsList: document.getElementById('missingStudentsList'),
+            studentGrades: document.getElementById('studentGrades'),
+            video: document.getElementById('video'),
+            canvas: document.getElementById('canvas'),
+            multiResult: document.getElementById('multiResult'),
+            detectedResponses: document.getElementById('detectedResponses'),
+            startScannerBtn: document.getElementById('startScannerBtn'),
+            stopScannerBtn: document.getElementById('stopScannerBtn'),
+            totalStudents: document.getElementById('totalStudents'),
+            respondedStudents: document.getElementById('respondedStudents'),
+            correctAnswers: document.getElementById('correctAnswers'),
+            averageScore: document.getElementById('averageScore'),
+            exportResultsBtn: document.getElementById('exportResultsBtn'),
+            currentQuestionText: document.getElementById('currentQuestionText'),
+            correctAnswerDisplay: document.getElementById('correctAnswerDisplay'),
+            fontSizeSlider: document.getElementById('fontSizeSlider'),
+            fontSizeValue: document.getElementById('fontSizeValue'),
+            qrGridOverlay: document.getElementById('qrGridOverlay'),
+            toggleGridBtn: document.getElementById('toggleGridBtn'),
+            zoomInBtn: document.getElementById('zoomInBtn'),
+            zoomOutBtn: document.getElementById('zoomOutBtn'),
+            zoomControls: document.getElementById('zoomControls'),
+            toggleZoomBtn: document.getElementById('toggleZoomBtn'),
+            randomizeQuestionsBtn: document.getElementById('randomizeQuestionsBtn'),
+            qrCodeNumber: document.getElementById('qrCodeNumber'),
+            qrHighlight: document.getElementById('qrHighlight'),
+            qrDetected: document.getElementById('qrDetected'),
+            detectedResponse: document.getElementById('detectedResponse')
+        };
+
+        // Inicializar la aplicación
+        function initializeApp() {
+            // Event listeners
+            elements.addQuestionBtn.addEventListener('click', addQuestion);
+            elements.deleteQuestionBtn.addEventListener('click', deleteCurrentQuestion);
+            elements.importQuestionsBtn.addEventListener('click', importQuestionsFromCSV);
+            elements.importStudentsBtn.addEventListener('click', importStudentsFromCSV);
+            elements.prevQuestionBtn.addEventListener('click', showPreviousQuestion);
+            elements.nextQuestionBtn.addEventListener('click', showNextQuestion);
+            elements.startScannerBtn.addEventListener('click', startScanner);
+            elements.stopScannerBtn.addEventListener('click', stopScanner);
+            elements.exportResultsBtn.addEventListener('click', exportResultsToCSV);
+            elements.fontSizeSlider.addEventListener('input', updateFontSize);
+            elements.toggleGridBtn.addEventListener('click', toggleGrid);
+            elements.toggleZoomBtn.addEventListener('click', toggleZoom);
+            elements.zoomInBtn.addEventListener('click', zoomIn);
+            elements.zoomOutBtn.addEventListener('click', zoomOut);
+            elements.randomizeQuestionsBtn.addEventListener('click', randomizeQuestions);
+
+            // Inicialización
+            elements.stopScannerBtn.disabled = true;
+            updateStatistics();
+            updateFontSize();
+        }
+
+        function randomizeQuestions() {
+            if (questions.length === 0) {
+                alert('No hay preguntas para aleatorizar');
+                return;
+            }
             
-            examData.scannedResults = [];
+            if (!confirm('¿Estás seguro de que deseas aleatorizar el orden de las preguntas? Esto no afectará las respuestas ya registradas.')) {
+                return;
+            }
             
-            // Generar una hoja por estudiante
-            examData.students.forEach(student => {
-                const sheet = document.createElement('div');
-                sheet.className = 'answer-sheet';
-                
-                // Generar QR único
-                const qr = qrcode(0, 'L');
-                qr.addData(student.qrData);
-                qr.make();
-                
-                sheet.innerHTML = `
-                    <div class="header">
-                        <strong>${examData.title}</strong>
-                    </div>
-                    <div class="student-info">
-                        <div><strong>Nombre:</strong> ${student.name}</div>
-                        <div><strong>ID:</strong> ${student.id}</div>
-                        <img class="qr-code" src="${qr.createDataURL(2)}" alt="QR">
-                    </div>
-                    <div class="questions-grid" id="questions-${student.id}"></div>
-                `;
-                
-                const questionsGrid = sheet.querySelector(`#questions-${student.id}`);
-                
-                // Generar preguntas
-                for (let i = 1; i <= examData.totalQuestions; i++) {
-                    const questionDiv = document.createElement('div');
-                    questionDiv.className = 'question';
-                    
-                    questionDiv.innerHTML = `
-                        <div class="question-number">${i}.</div>
-                        <div class="answer-circle">A</div>
-                        <div class="answer-circle">B</div>
-                        <div class="answer-circle">C</div>
-                        <div class="answer-circle">D</div>
-                    `;
-                    
-                    questionsGrid.appendChild(questionDiv);
+            const currentQuestion = currentQuestionIndex !== -1 ? questions[currentQuestionIndex] : null;
+            
+            for (let i = questions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [questions[i], questions[j]] = [questions[j], questions[i]];
+            }
+            
+            if (currentQuestion) {
+                currentQuestionIndex = questions.findIndex(q => 
+                    q.text === currentQuestion.text && 
+                    q.correctAnswer === currentQuestion.correctAnswer
+                );
+            }
+            
+            renderQuestionsList();
+            showCurrentQuestion();
+            
+            alert('El orden de las preguntas ha sido aleatorizado');
+        }
+
+        function toggleZoom() {
+            showZoom = !showZoom;
+            elements.zoomControls.style.display = showZoom ? 'flex' : 'none';
+        }
+
+        function zoomIn() {
+            if (currentZoom < maxZoom) {
+                currentZoom += zoomStep;
+                applyZoom();
+            }
+        }
+
+        function zoomOut() {
+            if (currentZoom > minZoom) {
+                currentZoom -= zoomStep;
+                applyZoom();
+            }
+        }
+
+        function applyZoom() {
+            if (videoStream && elements.video.srcObject) {
+                const track = videoStream.getVideoTracks()[0];
+                if (track && typeof track.getCapabilities === 'function') {
+                    const capabilities = track.getCapabilities();
+                    if (capabilities.zoom) {
+                        const settings = track.getSettings();
+                        const newZoom = Math.min(Math.max(currentZoom, minZoom), maxZoom);
+                        track.applyConstraints({
+                            advanced: [{
+                                zoom: newZoom
+                            }]
+                        });
+                    }
                 }
-                
-                container.appendChild(sheet);
+            }
+        }
+
+        function toggleGrid() {
+            showGrid = !showGrid;
+            elements.qrGridOverlay.style.display = showGrid ? 'grid' : 'none';
+
+            if (showGrid) {
+                elements.qrGridOverlay.innerHTML = '';
+                for (let i = 0; i < 16; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'qr-grid-cell';
+                    cell.textContent = i + 1;
+                    elements.qrGridOverlay.appendChild(cell);
+                }
+            }
+        }
+
+        function updateFontSize() {
+            currentFontSize = elements.fontSizeSlider.value;
+            elements.fontSizeValue.textContent = `${currentFontSize}px`;
+
+            const questionDisplay = document.getElementById('questionDisplay');
+            questionDisplay.style.fontSize = `${currentFontSize}px`;
+
+            const options = questionDisplay.querySelectorAll('.option-text');
+            options.forEach(option => {
+                option.style.fontSize = `${currentFontSize * 0.9}px`;
+            });
+
+            const optionLetters = questionDisplay.querySelectorAll('.option-letter');
+            optionLetters.forEach(letter => {
+                letter.style.fontSize = `${currentFontSize * 1.1}px`;
             });
         }
-        
-        // Escanear respuestas
-        function startScanner() {
-            const scannerContainer = document.getElementById('scanner-container');
-            scannerContainer.style.display = 'flex';
-            
-            const video = document.getElementById('scanner-video');
-            const canvas = document.getElementById('scanner-canvas');
-            const ctx = canvas.getContext('2d');
-            
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
-                .then(function(stream) {
-                    video.srcObject = stream;
-                    video.play();
-                    
-                    function scanFrame() {
-                        if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                            canvas.width = video.videoWidth;
-                            canvas.height = video.videoHeight;
-                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                            
-                            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                            const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                                inversionAttempts: "dontInvert",
-                            });
-                            
-                            if (code) {
-                                processScannedSheet(code.data);
+
+        function addQuestion() {
+            const questionText = elements.questionText.value.trim();
+            const optionA = elements.optionA.value.trim();
+            const optionB = elements.optionB.value.trim();
+            const optionC = elements.optionC.value.trim();
+            const optionD = elements.optionD.value.trim();
+            const correctAnswer = document.querySelector('input[name="correctAnswer"]:checked').value;
+
+            if (!questionText) {
+                alert('Por favor ingresa el texto de la pregunta');
+                return;
+            }
+
+            if (!optionA || !optionB || !optionC || !optionD) {
+                alert('Por favor ingresa todas las opciones de respuesta');
+                return;
+            }
+
+            const newQuestion = {
+                text: questionText,
+                options: {
+                    A: optionA,
+                    B: optionB,
+                    C: optionC,
+                    D: optionD
+                },
+                correctAnswer: correctAnswer
+            };
+
+            questions.push(newQuestion);
+            renderQuestionsList();
+
+            if (currentQuestionIndex === -1) {
+                currentQuestionIndex = 0;
+                showCurrentQuestion();
+            }
+
+            // Limpiar campos
+            elements.questionText.value = '';
+            elements.optionA.value = '';
+            elements.optionB.value = '';
+            elements.optionC.value = '';
+            elements.optionD.value = '';
+            document.querySelector('input[name="correctAnswer"][value="A"]').checked = true;
+        }
+
+        function deleteCurrentQuestion() {
+            if (currentQuestionIndex === -1) return;
+
+            if (confirm('¿Estás seguro de que deseas eliminar esta pregunta?')) {
+                questions.splice(currentQuestionIndex, 1);
+
+                // Eliminar respuestas asociadas a esta pregunta
+                responses = responses.filter(r => r.questionIndex !== currentQuestionIndex);
+
+                // Ajustar índices de las preguntas restantes
+                responses.forEach(r => {
+                    if (r.questionIndex > currentQuestionIndex) {
+                        r.questionIndex--;
+                    }
+                });
+
+                if (questions.length === 0) {
+                    currentQuestionIndex = -1;
+                } else if (currentQuestionIndex >= questions.length) {
+                    currentQuestionIndex = questions.length - 1;
+                }
+
+                renderQuestionsList();
+                showCurrentQuestion();
+                updateStatistics();
+                renderStudentGrades();
+            }
+        }
+
+        function importQuestionsFromCSV() {
+            const file = elements.questionsFile.files[0];
+            if (!file) {
+                alert('Por favor selecciona un archivo CSV');
+                return;
+            }
+
+            Papa.parse(file, {
+                header: false,
+                complete: function(results) {
+                    const newQuestions = [];
+                    const data = results.data;
+
+                    for (let i = 0; i < data.length; i++) {
+                        const row = data[i];
+                        
+                        if (row.length >= 6) {
+                            const questionText = row[0] ? row[0].trim() : '';
+                            const options = {
+                                A: row[1] ? row[1].trim() : '',
+                                B: row[2] ? row[2].trim() : '',
+                                C: row[3] ? row[3].trim() : '',
+                                D: row[4] ? row[4].trim() : ''
+                            };
+                            const correctAnswer = row[5] ? row[5].trim().toUpperCase() : '';
+
+                            if (questionText && options.A && options.B && options.C && options.D && ['A','B','C','D'].includes(correctAnswer)) {
+                                newQuestions.push({
+                                    text: questionText,
+                                    options: options,
+                                    correctAnswer: correctAnswer
+                                });
                             }
                         }
-                        
-                        requestAnimationFrame(scanFrame);
                     }
-                    
-                    scanFrame();
-                })
-                .catch(function(err) {
-                    alert("Error al acceder a la cámara: " + err);
-                    stopScanner();
-                });
+
+                    if (newQuestions.length === 0) {
+                        alert('No se encontraron preguntas válidas en el archivo. Formato esperado: Cada fila debe contener: Pregunta, Respuesta A, Respuesta B, Respuesta C, Respuesta D, Respuesta Correcta (A,B,C o D)');
+                        return;
+                    }
+
+                    questions = questions.concat(newQuestions);
+                    renderQuestionsList();
+
+                    if (currentQuestionIndex === -1 && questions.length > 0) {
+                        currentQuestionIndex = 0;
+                        showCurrentQuestion();
+                    }
+
+                    alert(`Se importaron ${newQuestions.length} preguntas`);
+                },
+                error: function(error) {
+                    alert('Error al leer el archivo CSV: ' + error.message);
+                }
+            });
         }
-        
+
+        function importStudentsFromCSV() {
+            const file = elements.studentsFile.files[0];
+            if (!file) {
+                alert('Por favor selecciona un archivo CSV');
+                return;
+            }
+
+            Papa.parse(file, {
+                header: false,
+                complete: function(results) {
+                    const newStudents = results.data
+                        .filter(row => row.length >= 2 && row[0] && row[1])
+                        .map(row => ({
+                            id: row[0].trim(),
+                            name: row[1].trim()
+                        }));
+
+                    if (newStudents.length === 0) {
+                        alert('No se encontraron estudiantes válidos en el archivo');
+                        return;
+                    }
+
+                    students = newStudents;
+                    renderStudentLists();
+                    updateStatistics();
+                    renderStudentGrades();
+
+                    alert(`Se importaron ${newStudents.length} estudiantes`);
+                },
+                error: function(error) {
+                    alert('Error al leer el archivo CSV: ' + error.message);
+                }
+            });
+        }
+
+        function showPreviousQuestion() {
+            if (questions.length === 0) return;
+
+            currentQuestionIndex = (currentQuestionIndex - 1 + questions.length) % questions.length;
+            showCurrentQuestion();
+        }
+
+        function showNextQuestion() {
+            if (questions.length === 0) return;
+
+            currentQuestionIndex = (currentQuestionIndex + 1) % questions.length;
+            showCurrentQuestion();
+        }
+
+        function showCurrentQuestion() {
+            if (currentQuestionIndex === -1 || questions.length === 0) {
+                elements.displayQuestionText.textContent = 'No hay preguntas cargadas';
+                elements.displayOptions.innerHTML = '';
+                elements.currentQuestionText.textContent = '';
+                elements.correctAnswerDisplay.textContent = '';
+                return;
+            }
+
+            const question = questions[currentQuestionIndex];
+            elements.displayQuestionText.textContent = `Pregunta ${currentQuestionIndex + 1}/${questions.length}: ${question.text}`;
+
+            elements.currentQuestionText.textContent = question.text;
+            elements.correctAnswerDisplay.textContent = 
+                `${question.correctAnswer}: ${question.options[question.correctAnswer]}`;
+
+            elements.displayOptions.innerHTML = '';
+            for (const [letter, text] of Object.entries(question.options)) {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option-item';
+                optionElement.innerHTML = `
+                    <span class="option-letter">${letter}</span>
+                    <span class="option-text">${text}</span>
+                `;
+                elements.displayOptions.appendChild(optionElement);
+            }
+
+            updateFontSize();
+
+            // Resaltar la pregunta actual en la tabla
+            const rows = elements.questionsTable.querySelectorAll('tr');
+            rows.forEach((row, index) => {
+                if (index === currentQuestionIndex) {
+                    row.style.backgroundColor = '#e8f0fe';
+                } else {
+                    row.style.backgroundColor = '';
+                }
+            });
+
+            renderStudentLists();
+            updateStatistics();
+            renderStudentGrades();
+        }
+
+        function renderQuestionsList() {
+            elements.questionsTable.innerHTML = '';
+
+            questions.forEach((question, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${question.text}</td>
+                    <td>${question.correctAnswer}: ${question.options[question.correctAnswer]}</td>
+                `;
+                row.addEventListener('click', () => {
+                    currentQuestionIndex = index;
+                    showCurrentQuestion();
+                });
+                elements.questionsTable.appendChild(row);
+            });
+        }
+
+        function renderStudentLists() {
+            elements.studentList.innerHTML = '';
+            elements.missingStudentsList.innerHTML = '';
+
+            if (students.length === 0) {
+                elements.studentList.innerHTML = '<p>No hay estudiantes cargados</p>';
+                elements.missingStudentsList.innerHTML = '<p>No hay estudiantes cargados</p>';
+                return;
+            }
+
+            students.forEach(student => {
+                const studentElement = document.createElement('div');
+                studentElement.className = 'student-item';
+                if (hasStudentResponded(student.id)) {
+                    studentElement.classList.add('responded');
+                }
+                
+                studentElement.innerHTML = `${student.name} (${student.id})`;
+                elements.studentList.appendChild(studentElement);
+            });
+
+            if (currentQuestionIndex !== -1) {
+                const missingStudents = students.filter(student => 
+                    !hasStudentResponded(student.id)
+                );
+
+                if (missingStudents.length === 0) {
+                    elements.missingStudentsList.innerHTML = '<p>Todos los estudiantes han respondido</p>';
+                } else {
+                    missingStudents.forEach(student => {
+                        const studentElement = document.createElement('div');
+                        studentElement.className = 'student-item missing';
+                        studentElement.innerHTML = `${student.name} (${student.id})`;
+                        elements.missingStudentsList.appendChild(studentElement);
+                    });
+                }
+            }
+        }
+
+        function renderStudentGrades() {
+            elements.studentGrades.innerHTML = '';
+
+            if (students.length === 0 || questions.length === 0) {
+                elements.studentGrades.innerHTML = '<p>No hay datos para mostrar calificaciones</p>';
+                return;
+            }
+
+            // Crear encabezado
+            const header = document.createElement('div');
+            header.className = 'student-grade-item grades-header';
+            header.innerHTML = `
+                <span>Estudiante</span>
+                <span>Respuesta dada (${currentQuestionIndex + 1}/${questions.length})</span>
+                <span>Calificación</span>
+            `;
+            elements.studentGrades.appendChild(header);
+
+            // Calcular calificaciones para cada estudiante
+            const studentGrades = students.map(student => {
+                const studentResponses = responses.filter(r => r.studentId === student.id);
+                const correctCount = studentResponses.filter(r => r.isCorrect).length;
+                const totalQuestions = questions.length;
+                const grade = totalQuestions > 0 ? (correctCount / totalQuestions * 5).toFixed(1) : 0;
+
+                const currentResponse = studentResponses.find(r => r.questionIndex === currentQuestionIndex);
+                let responseText = 'No respondió';
+                let responseClass = '';
+
+                if (currentResponse) {
+                    const isCorrect = currentResponse.answer === questions[currentQuestionIndex].correctAnswer;
+                    responseText = `${currentResponse.answer}: ${questions[currentQuestionIndex].options[currentResponse.answer]}`;
+                    responseClass = isCorrect ? 'correct-response' : 'incorrect-response';
+                }
+
+                return {
+                    id: student.id,
+                    name: student.name,
+                    grade: parseFloat(grade),
+                    correctCount: correctCount,
+                    totalQuestions: totalQuestions,
+                    responseText: responseText,
+                    responseClass: responseClass
+                };
+            });
+
+            // Ordenar estudiantes por calificación (de mayor a menor)
+            studentGrades.sort((a, b) => b.grade - a.grade);
+
+            // Mostrar estudiantes ordenados
+            studentGrades.forEach(student => {
+                const gradeItem = document.createElement('div');
+                gradeItem.className = `student-grade-item ${student.responseClass}`;
+                
+                // Barra de progreso para visualización
+                const progressPercentage = (student.correctCount / student.totalQuestions) * 100;
+                
+                gradeItem.innerHTML = `
+                    <span><strong>${student.id}.</strong> ${student.name}</span>
+                    <span>${student.responseText}</span>
+                    <div class="grade-progress">
+                        <span class="grade-value">${student.grade.toFixed(1)} / 5.0 (${student.correctCount}/${student.totalQuestions})</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progressPercentage}%"></div>
+                        </div>
+                    </div>
+                `;
+                elements.studentGrades.appendChild(gradeItem);
+            });
+
+            // Resaltar los primeros y últimos estudiantes
+            if (studentGrades.length > 0) {
+                const firstItems = elements.studentGrades.querySelectorAll('.student-grade-item:not(.grades-header)');
+                if (firstItems.length > 0) {
+                    firstItems[0].classList.add('highlight-top');
+                }
+                if (firstItems.length > 1) {
+                    firstItems[firstItems.length - 1].classList.add('highlight-bottom');
+                }
+            }
+
+            // Estilos para las respuestas correctas/incorrectas
+            const style = document.createElement('style');
+            style.textContent = `
+                .correct-response {
+                    background-color: #e8f5e9;
+                }
+                .incorrect-response {
+                    background-color: #ffebee;
+                }
+                .highlight-top {
+                    background-color: #e8f5e9 !important;
+                    font-weight: bold;
+                }
+                .highlight-bottom {
+                    background-color: #ffebee !important;
+                    font-weight: bold;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function hasStudentResponded(studentId) {
+            if (currentQuestionIndex === -1) return false;
+
+            return responses.some(r => 
+                r.studentId === studentId && 
+                r.questionIndex === currentQuestionIndex
+            );
+        }
+
+        async function startScanner() {
+            if (currentQuestionIndex === -1) {
+                alert('Por favor selecciona una pregunta primero');
+                return;
+            }
+
+            if (students.length === 0) {
+                alert('Por favor importa la lista de estudiantes primero');
+                return;
+            }
+
+            try {
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        facingMode: "environment",
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 },
+                        focusMode: "continuous"
+                    } 
+                });
+
+                elements.video.srcObject = videoStream;
+                await elements.video.play();
+                
+                const track = videoStream.getVideoTracks()[0];
+                if (track && typeof track.getCapabilities === 'function') {
+                    const capabilities = track.getCapabilities();
+                    if (capabilities.zoom) {
+                        currentZoom = 1;
+                        applyZoom();
+                    }
+                }
+
+                scanning = true;
+                scanQRCode();
+
+                elements.startScannerBtn.disabled = true;
+                elements.stopScannerBtn.disabled = false;
+                elements.multiResult.style.display = 'none';
+                elements.detectedResponses.innerHTML = '';
+                elements.zoomControls.style.display = showZoom ? 'flex' : 'none';
+                elements.qrCodeNumber.style.display = 'none';
+                elements.qrHighlight.style.display = 'none';
+                elements.qrDetected.style.display = 'none';
+            } catch (err) {
+                alert('Error al acceder a la cámara: ' + err.message);
+            }
+        }
+
         function stopScanner() {
-            const scannerContainer = document.getElementById('scanner-container');
-            scannerContainer.style.display = 'none';
-            
-            const video = document.getElementById('scanner-video');
-            const stream = video.srcObject;
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                video.srcObject = null;
+            scanning = false;
+
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
             }
+
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+                animationFrameId = null;
+            }
+
+            elements.video.srcObject = null;
+            elements.startScannerBtn.disabled = false;
+            elements.stopScannerBtn.disabled = true;
+            elements.zoomControls.style.display = 'none';
+            elements.qrCodeNumber.style.display = 'none';
+            elements.qrHighlight.style.display = 'none';
+            elements.qrDetected.style.display = 'none';
+            elements.detectedResponse.classList.remove('show'); // Ocultar respuesta detectada
         }
-        
-        function processScannedSheet(data) {
-            // Verificar si ya hemos escaneado esta hoja
-            if (examData.scannedResults.some(r => r.qrData === data)) {
+
+        function scanQRCode() {
+            if (!scanning) return;
+
+            const now = Date.now();
+            if (now - lastScanTime < scanInterval) {
+                animationFrameId = requestAnimationFrame(scanQRCode);
                 return;
             }
-            
-            // Aquí iría el código para detectar las respuestas marcadas
-            // En un sistema real, usarías OpenCV.js o otra librería para detectar los círculos marcados
-            // Por simplicidad, aquí simulamos respuestas aleatorias
-            
-            const student = examData.students.find(s => s.qrData === data);
-            if (!student) return;
-            
-            // Simular respuestas (en un sistema real, esto vendría del escaneo)
-            const answers = [];
-            for (let i = 0; i < examData.totalQuestions; i++) {
-                const options = ['A', 'B', 'C', 'D'];
-                answers.push(options[Math.floor(Math.random() * options.length)]);
-            }
-            
-            // Calcular puntaje
-            let score = 0;
-            const results = [];
-            for (let i = 0; i < examData.totalQuestions; i++) {
-                const isCorrect = answers[i] === examData.correctAnswers[i];
-                if (isCorrect) score++;
-                results.push({
-                    question: i + 1,
-                    answer: answers[i],
-                    correct: examData.correctAnswers[i],
-                    isCorrect: isCorrect
+
+            if (elements.video.readyState === elements.video.HAVE_ENOUGH_DATA) {
+                elements.canvas.width = elements.video.videoWidth;
+                elements.canvas.height = elements.video.videoHeight;
+
+                const canvasContext = elements.canvas.getContext('2d');
+                canvasContext.drawImage(elements.video, 0, 0, elements.canvas.width, elements.canvas.height);
+
+                const imageData = canvasContext.getImageData(0, 0, elements.canvas.width, elements.canvas.height);
+                
+                // 1. Intento de escaneo de toda la imagen
+                let code = jsQR(imageData.data, elements.canvas.width, elements.canvas.height, {
+                    inversionAttempts: "dontInvert",
                 });
+
+                // Si no se encontró código, intentar con enfoque alternativo
+                if (!code) {
+                    const smallCanvas = document.createElement('canvas');
+                    const smallWidth = elements.canvas.width / 2;
+                    const smallHeight = elements.canvas.height / 2;
+                    smallCanvas.width = smallWidth;
+                    smallCanvas.height = smallHeight;
+                    const smallCtx = smallCanvas.getContext('2d');
+                    smallCtx.drawImage(elements.video, 0, 0, smallWidth, smallHeight);
+                    
+                    const smallImageData = smallCtx.getImageData(0, 0, smallWidth, smallHeight);
+                    code = jsQR(smallImageData.data, smallWidth, smallHeight, {
+                        inversionAttempts: "invertFirst",
+                    });
+                }
+
+                // Si aún no se encontró, intentar con enfoque de cuadrícula
+                if (!code) {
+                    const gridSize = 4;
+                    const cellWidth = elements.canvas.width / gridSize;
+                    const cellHeight = elements.canvas.height / gridSize;
+
+                    for (let row = 0; row < gridSize; row++) {
+                        for (let col = 0; col < gridSize; col++) {
+                            const x = col * cellWidth;
+                            const y = row * cellHeight;
+                            
+                            const cellData = canvasContext.getImageData(x, y, cellWidth, cellHeight);
+                            code = jsQR(cellData.data, cellWidth, cellHeight, {
+                                inversionAttempts: "dontInvert",
+                            });
+
+                            if (code) {
+                                // Mostrar número de celda donde se detectó el QR
+                                elements.qrCodeNumber.textContent = `QR en celda ${(row * gridSize) + col + 1}`;
+                                elements.qrCodeNumber.style.display = 'block';
+                                
+                                // Ajustar coordenadas para la posición real en la imagen completa
+                                code.location.topLeftCorner.x += x;
+                                code.location.topLeftCorner.y += y;
+                                code.location.topRightCorner.x += x;
+                                code.location.topRightCorner.y += y;
+                                code.location.bottomRightCorner.x += x;
+                                code.location.bottomRightCorner.y += y;
+                                code.location.bottomLeftCorner.x += x;
+                                code.location.bottomLeftCorner.y += y;
+                                break;
+                            }
+                        }
+                        if (code) break;
+                    }
+                }
+
+                if (code) {
+                    highlightQRCode(code.location);
+                    processQRCode(code);
+                    lastScanTime = now;
+                } else {
+                    elements.qrHighlight.style.display = 'none';
+                    elements.qrDetected.style.display = 'none';
+                }
             }
+
+            animationFrameId = requestAnimationFrame(scanQRCode);
+        }
+
+        function highlightQRCode(location) {
+            if (!location) {
+                elements.qrHighlight.style.display = 'none';
+                elements.qrDetected.style.display = 'none';
+                return;
+            }
+
+            // Calcular las coordenadas relativas al contenedor de video
+            const videoRect = elements.video.getBoundingClientRect();
+            const scaleX = videoRect.width / elements.canvas.width;
+            const scaleY = videoRect.height / elements.canvas.height;
+
+            // Calcular las coordenadas de las esquinas del QR
+            const topLeft = {
+                x: location.topLeftCorner.x * scaleX,
+                y: location.topLeftCorner.y * scaleY
+            };
+            const topRight = {
+                x: location.topRightCorner.x * scaleX,
+                y: location.topRightCorner.y * scaleY
+            };
+            const bottomRight = {
+                x: location.bottomRightCorner.x * scaleX,
+                y: location.bottomRightCorner.y * scaleY
+            };
+            const bottomLeft = {
+                x: location.bottomLeftCorner.x * scaleX,
+                y: location.bottomLeftCorner.y * scaleY
+            };
+
+            // Calcular el ancho y alto del rectángulo de resaltado
+            const width = Math.max(
+                Math.abs(topRight.x - topLeft.x),
+                Math.abs(bottomRight.x - bottomLeft.x)
+            );
+            const height = Math.max(
+                Math.abs(bottomLeft.y - topLeft.y),
+                Math.abs(bottomRight.y - topRight.y)
+            );
+
+            // Calcular la posición del rectángulo de resaltado
+            const left = Math.min(topLeft.x, bottomLeft.x);
+            const top = Math.min(topLeft.y, topRight.y);
+
+            // Aplicar estilos al resaltado
+            elements.qrHighlight.style.display = 'block';
+            elements.qrHighlight.style.left = `${left}px`;
+            elements.qrHighlight.style.top = `${top}px`;
+            elements.qrHighlight.style.width = `${width}px`;
+            elements.qrHighlight.style.height = `${height}px`;
+            elements.qrHighlight.style.borderRadius = '8px';
+            elements.qrHighlight.style.transform = `rotate(${getQRRotation(location)}deg)`;
+
+            // Aplicar estilos al área detectada (similar a Plickers)
+            elements.qrDetected.style.display = 'block';
+            elements.qrDetected.style.left = `${left}px`;
+            elements.qrDetected.style.top = `${top}px`;
+            elements.qrDetected.style.width = `${width}px`;
+            elements.qrDetected.style.height = `${height}px`;
+            elements.qrDetected.style.transform = `rotate(${getQRRotation(location)}deg)`;
+        }
+
+        function getQRRotation(location) {
+            // Calcular el ángulo de rotación basado en la orientación del QR
+            const dx = location.topRightCorner.x - location.topLeftCorner.x;
+            const dy = location.topRightCorner.y - location.topLeftCorner.y;
+            return Math.atan2(dy, dx) * (180 / Math.PI);
+        }
+
+        function processQRCode(code) {
+            elements.detectedResponses.innerHTML = '';
             
-            // Guardar resultados
-            examData.scannedResults.push({
+            const qrData = code.data;
+            const student = students.find(s => s.id === qrData);
+
+            if (!student) {
+                const responseElement = document.createElement('div');
+                responseElement.className = 'detected-response';
+                responseElement.textContent = `ID no reconocido: ${qrData}`;
+                elements.detectedResponses.appendChild(responseElement);
+                elements.multiResult.style.display = 'block';
+                return;
+            }
+
+            if (hasStudentResponded(student.id)) {
+                const responseElement = document.createElement('div');
+                responseElement.className = 'detected-response';
+                responseElement.textContent = `${student.name} ya respondió esta pregunta`;
+                elements.detectedResponses.appendChild(responseElement);
+                elements.multiResult.style.display = 'block';
+                return;
+            }
+
+            const answer = detectAnswerFromOrientation(code.location);
+
+            responses.push({
+                questionIndex: currentQuestionIndex,
                 studentId: student.id,
-                studentName: student.name,
-                qrData: data,
-                answers: answers,
-                results: results,
-                score: score,
-                percentage: (score / examData.totalQuestions * 100).toFixed(2),
-                grade: (score / examData.totalQuestions * 5).toFixed(2)
+                answer: answer,
+                isCorrect: answer === questions[currentQuestionIndex].correctAnswer,
+                timestamp: new Date().toISOString()
             });
-            
-            alert(`Hoja escaneada: ${student.name}\nPuntaje: ${score}/${examData.totalQuestions}`);
-            stopScanner();
+
+            // Mostrar respuesta detectada en pantalla
+            elements.detectedResponse.textContent = `Est. ${student.id}: ${answer}`;
+            elements.detectedResponse.style.color = answer === questions[currentQuestionIndex].correctAnswer ? '#34A853' : '#EA4335';
+            elements.detectedResponse.classList.add('show');
+
+            const responseElement = document.createElement('div');
+            responseElement.className = 'detected-response';
+            responseElement.textContent = `${student.name} respondió: ${answer} (${questions[currentQuestionIndex].options[answer]})`;
+            elements.detectedResponses.appendChild(responseElement);
+
+            renderStudentLists();
+            updateStatistics();
+            renderStudentGrades();
+            elements.multiResult.style.display = 'block';
+
+            setTimeout(() => {
+                elements.multiResult.style.display = 'none';
+                elements.qrCodeNumber.style.display = 'none';
+                elements.qrHighlight.style.display = 'none';
+                elements.qrDetected.style.display = 'none';
+                elements.detectedResponse.classList.remove('show');
+            }, 3000);
         }
-        
-        // Mostrar estadísticas
-        function showStats() {
-            if (examData.scannedResults.length === 0) {
-                alert("No hay resultados escaneados aún.");
-                return;
-            }
-            
-            const statsContent = document.getElementById('stats-content');
-            statsContent.innerHTML = '';
-            
-            // Estadísticas por pregunta
-            const questionStats = Array(examData.totalQuestions).fill(0).map(() => ({
-                correct: 0,
-                total: 0,
-                a: 0, b: 0, c: 0, d: 0
-            }));
-            
-            examData.scannedResults.forEach(result => {
-                result.results.forEach((r, i) => {
-                    questionStats[i].total++;
-                    if (r.isCorrect) questionStats[i].correct++;
-                    questionStats[i][r.answer.toLowerCase()]++;
+
+        function detectAnswerFromOrientation(qrLocation) {
+            const dx = qrLocation.topRightCorner.x - qrLocation.topLeftCorner.x;
+            const dy = qrLocation.topRightCorner.y - qrLocation.topLeftCorner.y;
+
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            // Ajustar los rangos para mayor precisión
+            if (angle >= -45 && angle < 45) return 'A'; // Derecha
+            if (angle >= 45 && angle < 135) return 'B'; // Abajo
+            if (angle >= 135 || angle < -135) return 'C'; // Izquierda
+            return 'D'; // Arriba
+        }
+
+        function updateStatistics() {
+            if (currentQuestionIndex === -1 || questions.length === 0) {
+                elements.totalStudents.textContent = '0';
+                elements.respondedStudents.textContent = '0';
+                elements.correctAnswers.textContent = '0';
+                elements.averageScore.textContent = '0.0';
+
+                ['A', 'B', 'C', 'D'].forEach(option => {
+                    document.getElementById(`count${option}`).textContent = '0';
+                    document.getElementById(`percent${option}`).textContent = '0%';
                 });
-            });
-            
-            // Crear tabla de estadísticas por pregunta
-            let statsHTML = '<h3>Estadísticas por Pregunta</h3>';
-            statsHTML += '<table class="stats-table"><tr><th>Pregunta</th><th>% Correctas</th><th>Respuesta Correcta</th><th>A</th><th>B</th><th>C</th><th>D</th></tr>';
-            
-            questionStats.forEach((stat, i) => {
-                const percentage = (stat.correct / stat.total * 100).toFixed(2);
-                statsHTML += `<tr>
-                    <td>${i + 1}</td>
-                    <td>${percentage}%</td>
-                    <td>${examData.correctAnswers[i]}</td>
-                    <td>${stat.a}</td>
-                    <td>${stat.b}</td>
-                    <td>${stat.c}</td>
-                    <td>${stat.d}</td>
-                </tr>`;
-            });
-            
-            statsHTML += '</table>';
-            
-            // Resultados por estudiante
-            statsHTML += '<h3>Resultados por Estudiante</h3>';
-            statsHTML += '<table class="stats-table"><tr><th>ID</th><th>Nombre</th><th>Puntaje</th><th>Porcentaje</th><th>Nota (0-5)</th></tr>';
-            
-            examData.scannedResults.forEach(result => {
-                statsHTML += `<tr>
-                    <td>${result.studentId}</td>
-                    <td>${result.studentName}</td>
-                    <td>${result.score}/${examData.totalQuestions}</td>
-                    <td>${result.percentage}%</td>
-                    <td>${result.grade}</td>
-                </tr>`;
-            });
-            
-            statsHTML += '</table>';
-            
-            statsContent.innerHTML = statsHTML;
-            document.getElementById('stats-section').style.display = 'block';
-        }
-        
-        // Exportar a CSV
-        function exportToCSV() {
-            if (examData.scannedResults.length === 0) {
-                alert("No hay resultados escaneados para exportar.");
+
                 return;
             }
-            
-            // Preparar datos para CSV
-            const csvData = [];
-            
-            // Encabezados
-            const headers = ['ID', 'Nombre', 'Puntaje', 'Porcentaje', 'Nota (0-5)'];
-            for (let i = 1; i <= examData.totalQuestions; i++) {
-                headers.push(`P${i}`);
-            }
-            csvData.push(headers);
-            
-            // Datos de cada estudiante
-            examData.scannedResults.forEach(result => {
-                const row = [
-                    result.studentId,
-                    result.studentName,
-                    `${result.score}/${examData.totalQuestions}`,
-                    `${result.percentage}%`,
-                    result.grade,
-                    ...result.answers
-                ];
-                csvData.push(row);
+
+            elements.totalStudents.textContent = students.length;
+
+            const questionResponses = responses.filter(r => r.questionIndex === currentQuestionIndex);
+            elements.respondedStudents.textContent = questionResponses.length;
+
+            const correctCount = questionResponses.filter(r => r.isCorrect).length;
+            elements.correctAnswers.textContent = correctCount;
+
+            const average = students.length > 0 ? 
+                (correctCount / students.length * 5).toFixed(1) : '0.0';
+            elements.averageScore.textContent = average;
+
+            const totalResponses = questionResponses.length;
+            const counts = { A: 0, B: 0, C: 0, D: 0 };
+
+            questionResponses.forEach(r => {
+                counts[r.answer]++;
             });
-            
-            // Convertir a CSV
-            const csv = Papa.unparse(csvData);
-            
-            // Descargar archivo
+
+            ['A', 'B', 'C', 'D'].forEach(option => {
+                const count = counts[option];
+                const percent = totalResponses > 0 ? 
+                    Math.round((count / totalResponses) * 100) : 0;
+
+                document.getElementById(`count${option}`).textContent = count;
+                document.getElementById(`percent${option}`).textContent = `${percent}%`;
+            });
+        }
+
+        function exportResultsToCSV() {
+            if (questions.length === 0 || students.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+
+            // Obtener nombres de archivos para incluir en el nombre del archivo de exportación
+            const questionsFileName = elements.questionsFile.files[0]?.name.replace('.csv', '') || 'preguntas';
+            const studentsFileName = elements.studentsFile.files[0]?.name.replace('.csv', '') || 'estudiantes';
+
+            const data = [];
+
+            // Encabezados
+            const headers = ['Nombre del Estudiante', 'ID'];
+            const correctAnswersRow = ['RESPUESTAS CORRECTAS', ''];
+
+            questions.forEach((question, index) => {
+                headers.push(`Pregunta ${index + 1}`);
+                correctAnswersRow.push(`${question.correctAnswer}: ${question.options[question.correctAnswer]}`);
+            });
+
+            headers.push('Calificación Total', 'Fecha/Hora');
+            correctAnswersRow.push('', '');
+
+            data.push(headers);
+            data.push(correctAnswersRow);
+
+            // Datos de estudiantes
+            students.forEach(student => {
+                const row = [student.name, student.id];
+                let hasResponses = false;
+
+                questions.forEach((question, qIndex) => {
+                    const response = responses.find(r => 
+                        r.studentId === student.id && r.questionIndex === qIndex
+                    );
+
+                    if (response) {
+                        row.push(`${response.answer}: ${question.options[response.answer]}`);
+                        hasResponses = true;
+                    } else {
+                        row.push('No respondió');
+                    }
+                });
+
+                const studentResponses = responses.filter(r => r.studentId === student.id);
+                const correctCount = studentResponses.filter(r => r.isCorrect).length;
+                const totalQuestions = questions.length;
+                const grade = totalQuestions > 0 ? (correctCount / totalQuestions * 5).toFixed(1) : '0.0';
+                row.push(grade);
+
+                const lastResponse = studentResponses.reduce((latest, current) => {
+                    return (!latest || current.timestamp > latest.timestamp) ? current : latest;
+                }, null);
+
+                row.push(lastResponse ? lastResponse.timestamp : '');
+
+                data.push(row);
+            });
+
+            // Resumen final ordenado por calificación
+            data.push([]);
+            data.push(['RESUMEN FINAL DE CALIFICACIONES']);
+            data.push(['Estudiante', 'ID', 'Nota Final', 'Preguntas Correctas', 'Total Preguntas']);
+
+            const finalGrades = students.map(student => {
+                const studentResponses = responses.filter(r => r.studentId === student.id);
+                const correctCount = studentResponses.filter(r => r.isCorrect).length;
+                const totalQuestions = questions.length;
+                const grade = totalQuestions > 0 ? (correctCount / totalQuestions * 5).toFixed(1) : '0.0';
+
+                return {
+                    name: student.name,
+                    id: student.id,
+                    grade: parseFloat(grade),
+                    correctCount: correctCount,
+                    totalQuestions: totalQuestions
+                };
+            });
+
+            // Ordenar de mayor a menor calificación
+            finalGrades.sort((a, b) => b.grade - a.grade);
+
+            finalGrades.forEach(student => {
+                data.push([
+                    student.name,
+                    student.id,
+                    student.grade.toFixed(1),
+                    student.correctCount,
+                    student.totalQuestions
+                ]);
+            });
+
+            // Estadísticas generales
+            data.push([]);
+            data.push(['ESTADÍSTICAS GENERALES']);
+
+            const totalStudents = students.length;
+            const totalResponses = responses.length;
+            const totalCorrect = responses.filter(r => r.isCorrect).length;
+            const averageGrade = totalStudents > 0 ? 
+                (finalGrades.reduce((sum, student) => sum + student.grade, 0) / totalStudents).toFixed(1) : '0.0';
+
+            data.push(['Total Estudiantes', totalStudents]);
+            data.push(['Total Respuestas Registradas', totalResponses]);
+            data.push(['Total Respuestas Correctas', totalCorrect]);
+            data.push(['Promedio General', averageGrade]);
+
+            // Generar CSV
+            const csv = Papa.unparse(data);
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
-            
-            link.setAttribute('href', url);
-            link.setAttribute('download', `resultados_${examData.title.replace(/\s+/g, '_')}.csv`);
-            link.style.visibility = 'hidden';
-            
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `resultados_${questionsFileName}_${studentsFileName}_${new Date().toISOString().slice(0,10)}.csv`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
+
+        // Verificar autenticación al cargar la página
+        checkAuthentication();
+    </script>
+    <script>
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            alert("Acceso restringido.");
+        });
+        document.addEventListener('keydown', function(e) {
+            if (
+                e.key === "F12" || 
+                e.ctrlKey && e.key === "u" || 
+                e.ctrlKey && e.shiftKey && e.key === "I"
+            ) {
+                e.preventDefault();
+                alert("Acceso restringido.");
+            }
+        });
     </script>
 </body>
 </html>
