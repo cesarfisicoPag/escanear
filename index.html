@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -344,8 +343,8 @@
             height: 100%;
             pointer-events: none;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
             border: 2px solid rgba(255, 0, 0, 0.5);
         }
         .qr-grid-cell {
@@ -492,7 +491,7 @@
     <div id="appContent" style="display: none;">
         <div class="section">
             <h1>CAL_ifi_CAL</h1>
-            <p>Cesarfisico 3219925086.</p>
+            <p>Cesarfisico 3219925086..</p>
         </div>
         
         <div class="section">
@@ -560,6 +559,7 @@
             </div>
         </div>
 
+        <div class="section">
             <div class="question-nav-container">
                 <div class="question-nav-buttons">
                     <button id="prevQuestionBtn" class="secondary">← Anterior</button>
@@ -570,14 +570,15 @@
                 </div>
             </div>
         </div>
-<!-- Control deslizante para el tamaño de fuente -->
-            <div class="font-size-control">
-                <label for="fontSizeSlider">Tamaño de letra:</label>
-                <div class="font-size-slider-container">
-                    <input type="range" id="fontSizeSlider" class="font-size-slider" min="12" max="36" value="16">
-                    <span id="fontSizeValue" class="font-size-value">16px</span>
-                </div>
+        
+        <!-- Control deslizante para el tamaño de fuente -->
+        <div class="font-size-control">
+            <label for="fontSizeSlider">Tamaño de letra:</label>
+            <div class="font-size-slider-container">
+                <input type="range" id="fontSizeSlider" class="font-size-slider" min="12" max="36" value="16">
+                <span id="fontSizeValue" class="font-size-value">16px</span>
             </div>
+        </div>
         
         <div class="section">
             <div class="question-display" id="questionDisplay">
@@ -586,12 +587,12 @@
                     <!-- Las opciones se mostrarán aquí -->
                 </div>
             </div>
-        <div id="multiResult" class="multi-result" style="display: none;">
-            <h3>Respuestas Detectadas:</h3>
-            <div id="detectedResponses"></div>
+            <div id="multiResult" class="multi-result" style="display: none;">
+                <h3>Respuestas Detectadas:</h3>
+                <div id="detectedResponses"></div>
+            </div>
         </div>
-
-            
+                
         <div class="section">
             <h3>Estudiantes Registrados</h3>
             <div class="student-list" id="studentList"></div>
@@ -618,6 +619,7 @@
             <button id="toggleGridBtn">Mostrar/Ocultar Cuadrícula</button>
             <button id="toggleZoomBtn">Mostrar/Ocultar Zoom</button>
         </div>
+        
         <div class="section">
             <h3 class="missing-title">Estudiantes Faltantes por Responder</h3>
             <div class="student-list" id="missingStudentsList"></div>
@@ -938,7 +940,8 @@
 
             if (showGrid) {
                 elements.qrGridOverlay.innerHTML = '';
-                for (let i = 0; i < 16; i++) {
+                // Crear 9 celdas (3x3) en lugar de 16 (4x4)
+                for (let i = 0; i < 9; i++) {
                     const cell = document.createElement('div');
                     cell.className = 'qr-grid-cell';
                     cell.textContent = i + 1;
@@ -1448,32 +1451,49 @@
 
                 const imageData = canvasContext.getImageData(0, 0, elements.canvas.width, elements.canvas.height);
                 
+                // Corregido: Crear una copia de los datos de la imagen para evitar problemas de referencia
+                const imageDataCopy = new ImageData(
+                    new Uint8ClampedArray(imageData.data),
+                    imageData.width,
+                    imageData.height
+                );
+                
                 // 1. Intento de escaneo de toda la imagen
-                let code = jsQR(imageData.data, elements.canvas.width, elements.canvas.height, {
+                let code = jsQR(imageDataCopy.data, imageDataCopy.width, imageDataCopy.height, {
                     inversionAttempts: "dontInvert",
                 });
 
                 // Si no se encontró código, intentar con enfoque alternativo
                 if (!code) {
+                    // Reducir tamaño de la imagen para mejorar el rendimiento
                     const smallCanvas = document.createElement('canvas');
-                    const smallWidth = elements.canvas.width / 2;
-                    const smallHeight = elements.canvas.height / 2;
+                    const smallWidth = Math.floor(elements.canvas.width / 2);
+                    const smallHeight = Math.floor(elements.canvas.height / 2);
                     smallCanvas.width = smallWidth;
                     smallCanvas.height = smallHeight;
+                    
                     const smallCtx = smallCanvas.getContext('2d');
                     smallCtx.drawImage(elements.video, 0, 0, smallWidth, smallHeight);
                     
                     const smallImageData = smallCtx.getImageData(0, 0, smallWidth, smallHeight);
-                    code = jsQR(smallImageData.data, smallWidth, smallHeight, {
+                    
+                    // Crear copia de los datos de la imagen pequeña
+                    const smallImageDataCopy = new ImageData(
+                        new Uint8ClampedArray(smallImageData.data),
+                        smallImageData.width,
+                        smallImageData.height
+                    );
+                    
+                    code = jsQR(smallImageDataCopy.data, smallImageDataCopy.width, smallImageDataCopy.height, {
                         inversionAttempts: "invertFirst",
                     });
                 }
 
-                // Si aún no se encontró, intentar con enfoque de cuadrícula
+                // Si aún no se encontró, intentar con enfoque de cuadrícula 3x3
                 if (!code) {
-                    const gridSize = 4;
-                    const cellWidth = elements.canvas.width / gridSize;
-                    const cellHeight = elements.canvas.height / gridSize;
+                    const gridSize = 3;
+                    const cellWidth = Math.floor(elements.canvas.width / gridSize);
+                    const cellHeight = Math.floor(elements.canvas.height / gridSize);
 
                     for (let row = 0; row < gridSize; row++) {
                         for (let col = 0; col < gridSize; col++) {
@@ -1481,12 +1501,20 @@
                             const y = row * cellHeight;
                             
                             const cellData = canvasContext.getImageData(x, y, cellWidth, cellHeight);
-                            code = jsQR(cellData.data, cellWidth, cellHeight, {
+                            
+                            // Crear copia de los datos de la celda
+                            const cellDataCopy = new ImageData(
+                                new Uint8ClampedArray(cellData.data),
+                                cellData.width,
+                                cellData.height
+                            );
+                            
+                            code = jsQR(cellDataCopy.data, cellDataCopy.width, cellDataCopy.height, {
                                 inversionAttempts: "dontInvert",
                             });
 
                             if (code) {
-                                // Mostrar número de celda donde se detectó el QR
+                                // Mostrar número de celda donde se detectó el QR (1-9)
                                 elements.qrCodeNumber.textContent = `QR en celda ${(row * gridSize) + col + 1}`;
                                 elements.qrCodeNumber.style.display = 'block';
                                 
