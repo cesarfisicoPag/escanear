@@ -343,8 +343,8 @@
             height: 100%;
             pointer-events: none;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(5, 1fr);
             border: 2px solid rgba(255, 0, 0, 0.5);
         }
         .qr-grid-cell {
@@ -941,7 +941,7 @@
             if (showGrid) {
                 elements.qrGridOverlay.innerHTML = '';
                 // Crear 9 celdas (3x3) en lugar de 16 (4x4)
-                for (let i = 0; i < 9; i++) {
+                for (let i = 0; i < 20; i++) {
                     const cell = document.createElement('div');
                     cell.className = 'qr-grid-cell';
                     cell.textContent = i + 1;
