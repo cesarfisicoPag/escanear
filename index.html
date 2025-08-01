@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lector QR Fichas_CAL</title>
+    <title>Sistema de Evaluación con QR</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <style>
         body {
@@ -11,20 +11,39 @@
             margin: 0;
             padding: 20px;
             background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 20px;
+        }
+        .section {
+            padding: 15px;
+            border-radius: 8px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #4285F4;
         }
         #videoContainer {
             position: relative;
-            margin: 20px auto;
+            margin: 10px auto;
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
         }
         #video {
             width: 100%;
@@ -39,21 +58,154 @@
             background: #4285F4;
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
-            font-size: 16px;
-            margin: 5px;
+            font-size: 14px;
+            margin: 3px;
         }
         button:hover {
             background: #3367D6;
         }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
+        button.secondary {
+            background: #f1f1f1;
+            color: #333;
+        }
+        button.secondary:hover {
+            background: #ddd;
+        }
+        button.danger {
+            background: #dc3545;
+        }
+        button.danger:hover {
+            background: #c82333;
+        }
+        button.success {
+            background: #28a745;
+        }
+        button.success:hover {
+            background: #218838;
+        }
+        input, select, textarea {
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .question-text {
+            font-size: 18px;
+            margin: 10px 0;
+            padding: 10px;
             background: #e8f0fe;
-            border-radius: 8px;
-            min-height: 50px;
+            border-radius: 5px;
+        }
+        .answer-option {
+            padding: 8px;
+            margin: 5px 0;
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .correct-answer {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        .student-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+        }
+        .student-item {
+            padding: 5px;
+            margin: 3px 0;
+            background: #f8f9fa;
+            border-radius: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .student-item.answered {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .stat-item {
+            flex: 1;
+            min-width: 100px;
+            padding: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4285F4;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #6c757d;
+        }
+        .progress-container {
+            width: 100%;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .progress-bar {
+            height: 20px;
+            background: #4285F4;
+            border-radius: 5px;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .ranking-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        .ranking-position {
+            font-weight: bold;
+            color: #4285F4;
+        }
+        .answer-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+        }
+        .answer-stat {
+            text-align: center;
+            padding: 5px;
+            flex: 1;
+        }
+        .answer-letter {
+            font-weight: bold;
+        }
+        .answer-count {
+            font-size: 18px;
+        }
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .text-size-control {
+            display: flex;
+            align-items: center;
+        }
+        .text-size-control button {
+            margin: 0 5px;
         }
         .scanning-overlay {
             position: absolute;
@@ -71,23 +223,174 @@
             50% { border-color: rgba(0, 255, 0, 0.8); }
             100% { border-color: rgba(0, 255, 0, 0.5); }
         }
+        .tab-container {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        .tab {
+            padding: 8px 15px;
+            background: #e9ecef;
+            margin-right: 5px;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+        }
+        .tab.active {
+            background: #4285F4;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .file-input {
+            display: none;
+        }
+        .file-label {
+            display: inline-block;
+            padding: 8px 12px;
+            background: #6c757d;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+        .file-label:hover {
+            background: #5a6268;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Lector QR Fichas_CAL</h1>
-        
-        <div id="videoContainer">
-            <video id="video" playsinline autoplay></video>
-            <canvas id="canvas"></canvas>
-            <div class="scanning-overlay"></div>
+        <div class="left-column">
+            <div class="section">
+                <div class="section-title">Gestión de Estudiantes</div>
+                <div class="tab-container">
+                    <div class="tab active" onclick="openTab('import-students')">Importar</div>
+                    <div class="tab" onclick="openTab('manual-student')">Manual</div>
+                </div>
+                
+                <div id="import-students" class="tab-content active">
+                    <input type="file" id="students-file" class="file-input" accept=".csv">
+                    <label for="students-file" class="file-label">Seleccionar archivo CSV de estudiantes</label>
+                    <button onclick="importStudents()">Importar Estudiantes</button>
+                    <p>Formato CSV: numero,nombre</p>
+                </div>
+                
+                <div id="manual-student" class="tab-content">
+                    <input type="number" id="student-number" placeholder="Número" min="1">
+                    <input type="text" id="student-name" placeholder="Nombre">
+                    <button onclick="addStudent()">Agregar Estudiante</button>
+                </div>
+                
+                <div class="student-list" id="students-list">
+                    <!-- Lista de estudiantes se cargará aquí -->
+                </div>
+                <button onclick="clearStudents()" class="danger">Limpiar Lista</button>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Gestión de Preguntas</div>
+                <div class="tab-container">
+                    <div class="tab active" onclick="openTab('import-questions')">Importar</div>
+                    <div class="tab" onclick="openTab('manual-question')">Manual</div>
+                </div>
+                
+                <div id="import-questions" class="tab-content active">
+                    <input type="file" id="questions-file" class="file-input" accept=".csv">
+                    <label for="questions-file" class="file-label">Seleccionar archivo CSV de preguntas</label>
+                    <button onclick="importQuestions()">Importar Preguntas</button>
+                    <p>Formato CSV: pregunta,respuesta_a,respuesta_b,respuesta_c,respuesta_d,respuesta_correcta</p>
+                </div>
+                
+                <div id="manual-question" class="tab-content">
+                    <textarea id="question-text" placeholder="Texto de la pregunta"></textarea>
+                    <input type="text" id="answer-a" placeholder="Respuesta A">
+                    <input type="text" id="answer-b" placeholder="Respuesta B">
+                    <input type="text" id="answer-c" placeholder="Respuesta C">
+                    <input type="text" id="answer-d" placeholder="Respuesta D">
+                    <select id="correct-answer">
+                        <option value="">Seleccione respuesta correcta</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                    <button onclick="addQuestion()">Agregar Pregunta</button>
+                </div>
+            </div>
         </div>
         
-        <button id="startButton">Iniciar Cámara</button>
-        <button id="stopButton" disabled>Detener Cámara</button>
-        
-        <div id="result">
-            <p>Escanea un código QR para comenzar...</p>
+        <div class="right-column">
+            <div class="section">
+                <div class="section-title">Evaluación</div>
+                <div id="current-question-container">
+                    <div class="controls-row">
+                        <div>
+                            <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
+                            <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
+                        </div>
+                        <div class="text-size-control">
+                            <button onclick="decreaseTextSize()" class="secondary">A-</button>
+                            <button onclick="increaseTextSize()" class="secondary">A+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="question-info">
+                        Pregunta <span id="current-question-number">0</span> de <span id="total-questions">0</span>
+                    </div>
+                    
+                    <div class="question-text" id="question-display" style="font-size: 18px;">
+                        No hay preguntas cargadas
+                    </div>
+                    
+                    <div id="answers-display">
+                        <!-- Respuestas se cargarán aquí -->
+                    </div>
+                    
+                    <div class="controls-row">
+                        <button id="startButton">Iniciar Escaneo</button>
+                        <button id="stopButton" disabled>Detener Escaneo</button>
+                    </div>
+                    
+                    <div id="videoContainer">
+                        <video id="video" playsinline autoplay></video>
+                        <canvas id="canvas"></canvas>
+                        <div class="scanning-overlay"></div>
+                    </div>
+                    
+                    <div id="scan-result">
+                        <!-- Resultados del escaneo se mostrarán aquí -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Estudiantes por Responder</div>
+                <div class="student-list" id="pending-students">
+                    <!-- Estudiantes pendientes se cargarán aquí -->
+                </div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="response-progress"></div>
+                </div>
+                <div>Respondieron: <span id="answered-count">0</span> / <span id="total-students">0</span></div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Estadísticas de la Pregunta</div>
+                <div class="answer-stats" id="question-stats">
+                    <!-- Estadísticas se cargarán aquí -->
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Ranking de Estudiantes</div>
+                <div class="ranking-list" id="ranking-list">
+                    <!-- Ranking se cargará aquí -->
+                </div>
+                <button onclick="exportResults()" class="success">Exportar Resultados a CSV</button>
+            </div>
         </div>
     </div>
 
@@ -98,10 +401,16 @@
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
-        const resultDiv = document.getElementById('result');
         let lastScanTime = 0;
         const scanThrottle = 200; // ms entre escaneos
-
+        
+        // Datos de la aplicación
+        let students = [];
+        let questions = [];
+        let currentQuestionIndex = -1;
+        let studentResponses = {}; // {studentId: {responses: {questionIndex: answer}, score: number}}
+        let questionResponses = {}; // {questionIndex: {A: count, B: count, C: count, D: count}}
+        
         // Configuración optimizada de cámara
         const constraints = {
             video: {
@@ -117,9 +426,361 @@
                 ]
             }
         };
-
-        // Iniciar cámara
-        document.getElementById('startButton').addEventListener('click', async () => {
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            updateUI();
+            loadFromLocalStorage();
+            
+            // Event listeners para botones de cámara
+            document.getElementById('startButton').addEventListener('click', startCamera);
+            document.getElementById('stopButton').addEventListener('click', stopCamera);
+        });
+        
+        // Funciones de gestión de pestañas
+        function openTab(tabId) {
+            // Ocultar todos los contenidos de pestañas
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Desactivar todas las pestañas
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Activar la pestaña seleccionada
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Funciones de gestión de estudiantes
+        function addStudent() {
+            const number = document.getElementById('student-number').value.trim();
+            const name = document.getElementById('student-name').value.trim();
+            
+            if (!number || !name) {
+                alert('Por favor ingrese número y nombre del estudiante');
+                return;
+            }
+            
+            if (students.some(s => s.number === number)) {
+                alert('Ya existe un estudiante con este número');
+                return;
+            }
+            
+            const student = {
+                number: number,
+                name: name,
+                id: Date.now().toString()
+            };
+            
+            students.push(student);
+            updateStudentsList();
+            saveToLocalStorage();
+            
+            // Limpiar campos
+            document.getElementById('student-number').value = '';
+            document.getElementById('student-name').value = '';
+        }
+        
+        function importStudents() {
+            const fileInput = document.getElementById('students-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor seleccione un archivo CSV');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n');
+                let imported = 0;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const parts = line.split(',');
+                    if (parts.length < 2) continue;
+                    
+                    const number = parts[0].trim();
+                    const name = parts[1].trim();
+                    
+                    if (!number || !name) continue;
+                    
+                    // Verificar si el estudiante ya existe
+                    if (students.some(s => s.number === number)) {
+                        continue;
+                    }
+                    
+                    const student = {
+                        number: number,
+                        name: name,
+                        id: Date.now().toString() + i
+                    };
+                    
+                    students.push(student);
+                    imported++;
+                }
+                
+                updateStudentsList();
+                saveToLocalStorage();
+                alert(`Se importaron ${imported} estudiantes`);
+                fileInput.value = '';
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        function clearStudents() {
+            if (confirm('¿Está seguro que desea eliminar todos los estudiantes?')) {
+                students = [];
+                studentResponses = {};
+                updateStudentsList();
+                updatePendingStudents();
+                updateRanking();
+                saveToLocalStorage();
+            }
+        }
+        
+        function updateStudentsList() {
+            const list = document.getElementById('students-list');
+            list.innerHTML = '';
+            
+            if (students.length === 0) {
+                list.innerHTML = '<p>No hay estudiantes registrados</p>';
+                return;
+            }
+            
+            students.forEach(student => {
+                const item = document.createElement('div');
+                item.className = 'student-item';
+                item.innerHTML = `
+                    <span>${student.number}: ${student.name}</span>
+                    <button onclick="removeStudent('${student.id}')" class="danger">X</button>
+                `;
+                list.appendChild(item);
+            });
+            
+            document.getElementById('total-students').textContent = students.length;
+        }
+        
+        function removeStudent(id) {
+            students = students.filter(s => s.id !== id);
+            delete studentResponses[id];
+            updateStudentsList();
+            updatePendingStudents();
+            updateRanking();
+            saveToLocalStorage();
+        }
+        
+        // Funciones de gestión de preguntas
+        function addQuestion() {
+            const text = document.getElementById('question-text').value.trim();
+            const answerA = document.getElementById('answer-a').value.trim();
+            const answerB = document.getElementById('answer-b').value.trim();
+            const answerC = document.getElementById('answer-c').value.trim();
+            const answerD = document.getElementById('answer-d').value.trim();
+            const correct = document.getElementById('correct-answer').value;
+            
+            if (!text || !answerA || !answerB || !answerC || !answerD || !correct) {
+                alert('Por favor complete todos los campos');
+                return;
+            }
+            
+            const question = {
+                text: text,
+                answers: {
+                    A: answerA,
+                    B: answerB,
+                    C: answerC,
+                    D: answerD
+                },
+                correctAnswer: correct,
+                id: Date.now().toString()
+            };
+            
+            questions.push(question);
+            saveToLocalStorage();
+            updateQuestionDisplay();
+            
+            // Limpiar campos
+            document.getElementById('question-text').value = '';
+            document.getElementById('answer-a').value = '';
+            document.getElementById('answer-b').value = '';
+            document.getElementById('answer-c').value = '';
+            document.getElementById('answer-d').value = '';
+            document.getElementById('correct-answer').value = '';
+            
+            // Si es la primera pregunta, mostrarla
+            if (questions.length === 1) {
+                currentQuestionIndex = 0;
+                updateQuestionDisplay();
+            }
+        }
+        
+        function importQuestions() {
+            const fileInput = document.getElementById('questions-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Por favor seleccione un archivo CSV');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n');
+                let imported = 0;
+                
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    // Manejar comas dentro de campos (soporte básico)
+                    const parts = line.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/);
+                    if (parts.length < 6) continue;
+                    
+                    const text = parts[0].replace(/"/g, '').trim();
+                    const answerA = parts[1].replace(/"/g, '').trim();
+                    const answerB = parts[2].replace(/"/g, '').trim();
+                    const answerC = parts[3].replace(/"/g, '').trim();
+                    const answerD = parts[4].replace(/"/g, '').trim();
+                    const correct = parts[5].replace(/"/g, '').trim().toUpperCase();
+                    
+                    if (!text || !answerA || !answerB || !answerC || !answerD || !['A','B','C','D'].includes(correct)) {
+                        continue;
+                    }
+                    
+                    const question = {
+                        text: text,
+                        answers: {
+                            A: answerA,
+                            B: answerB,
+                            C: answerC,
+                            D: answerD
+                        },
+                        correctAnswer: correct,
+                        id: Date.now().toString() + i
+                    };
+                    
+                    questions.push(question);
+                    imported++;
+                }
+                
+                saveToLocalStorage();
+                alert(`Se importaron ${imported} preguntas`);
+                fileInput.value = '';
+                
+                // Si es la primera pregunta, mostrarla
+                if (questions.length > 0 && currentQuestionIndex === -1) {
+                    currentQuestionIndex = 0;
+                    updateQuestionDisplay();
+                }
+            };
+            
+            reader.readAsText(file);
+        }
+        
+        function removeQuestion(index) {
+            if (confirm('¿Está seguro que desea eliminar esta pregunta?')) {
+                questions.splice(index, 1);
+                
+                // Eliminar respuestas a esta pregunta
+                Object.keys(studentResponses).forEach(studentId => {
+                    if (studentResponses[studentId].responses[index]) {
+                        delete studentResponses[studentId].responses[index];
+                        // Recalcular puntaje
+                        calculateStudentScore(studentId);
+                    }
+                });
+                
+                // Actualizar índice si es necesario
+                if (currentQuestionIndex >= questions.length) {
+                    currentQuestionIndex = Math.max(0, questions.length - 1);
+                }
+                
+                saveToLocalStorage();
+                updateQuestionDisplay();
+                updateRanking();
+            }
+        }
+        
+        // Funciones de navegación de preguntas
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                updateQuestionDisplay();
+            }
+        }
+        
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                updateQuestionDisplay();
+            }
+        }
+        
+        function updateQuestionDisplay() {
+            const questionDisplay = document.getElementById('question-display');
+            const answersDisplay = document.getElementById('answers-display');
+            const currentQuestionNumber = document.getElementById('current-question-number');
+            const totalQuestions = document.getElementById('total-questions');
+            
+            totalQuestions.textContent = questions.length;
+            
+            if (currentQuestionIndex === -1 || questions.length === 0) {
+                questionDisplay.textContent = 'No hay preguntas cargadas';
+                answersDisplay.innerHTML = '';
+                currentQuestionNumber.textContent = '0';
+                return;
+            }
+            
+            const question = questions[currentQuestionIndex];
+            questionDisplay.textContent = question.text;
+            currentQuestionNumber.textContent = currentQuestionIndex + 1;
+            
+            // Actualizar botones de navegación
+            document.getElementById('prev-question').disabled = currentQuestionIndex === 0;
+            document.getElementById('next-question').disabled = currentQuestionIndex === questions.length - 1;
+            
+            // Mostrar respuestas
+            answersDisplay.innerHTML = '';
+            ['A', 'B', 'C', 'D'].forEach(letter => {
+                const answerDiv = document.createElement('div');
+                answerDiv.className = 'answer-option';
+                if (letter === question.correctAnswer) {
+                    answerDiv.classList.add('correct-answer');
+                }
+                answerDiv.textContent = `${letter}. ${question.answers[letter]}`;
+                answersDisplay.appendChild(answerDiv);
+            });
+            
+            // Actualizar estudiantes pendientes y estadísticas
+            updatePendingStudents();
+            updateQuestionStats();
+        }
+        
+        function increaseTextSize() {
+            const questionDisplay = document.getElementById('question-display');
+            const currentSize = parseInt(window.getComputedStyle(questionDisplay).fontSize);
+            questionDisplay.style.fontSize = (currentSize + 2) + 'px';
+        }
+        
+        function decreaseTextSize() {
+            const questionDisplay = document.getElementById('question-display');
+            const currentSize = parseInt(window.getComputedStyle(questionDisplay).fontSize);
+            if (currentSize > 12) {
+                questionDisplay.style.fontSize = (currentSize - 2) + 'px';
+            }
+        }
+        
+        // Funciones de cámara y escaneo QR
+        async function startCamera() {
             try {
                 // Detener cámara si ya está activa
                 if (videoStream) {
@@ -143,7 +804,6 @@
                 startQRDetection();
                 
             } catch (err) {
-                resultDiv.innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
                 console.error("Error al acceder a la cámara:", err);
                 
                 // Intentar con configuración más básica si falla
@@ -156,14 +816,14 @@
                         startQRDetection();
                     } catch (err2) {
                         console.error("Error con configuración básica:", err2);
+                        alert('No se pudo acceder a la cámara: ' + err2.message);
                     }
+                } else {
+                    alert('No se pudo acceder a la cámara: ' + err.message);
                 }
             }
-        });
-
-        // Detener cámara
-        document.getElementById('stopButton').addEventListener('click', stopCamera);
-
+        }
+        
         function stopCamera() {
             if (videoStream) {
                 videoStream.getTracks().forEach(track => {
@@ -180,10 +840,8 @@
             document.getElementById('startButton').disabled = false;
             document.getElementById('stopButton').disabled = true;
             video.srcObject = null;
-            resultDiv.innerHTML = '<p>Escanea un código QR para comenzar...</p>';
         }
-
-        // Función optimizada de detección QR
+        
         function startQRDetection() {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
@@ -227,28 +885,311 @@
             
             scanFrame();
         }
-
-        // Procesar código QR detectado
+        
         function handleQRDetection(qrData) {
-            stopCamera(); // Detener la cámara después de la detección
+            // Detectar la respuesta basada en la orientación del QR
+            // En el generador, las respuestas están en posiciones fijas:
+            // Arriba: A, Derecha: D, Abajo: C, Izquierda: B
             
-            resultDiv.innerHTML = `
-                <p><strong>Código detectado:</strong></p>
-                <p>${qrData}</p>
-                <p>${new Date().toLocaleTimeString()}</p>
-            `;
+            // Para determinar la orientación, necesitamos analizar la posición de los patrones de sincronización
+            // Esto es complejo sin acceso a los metadatos del QR, así que usaremos un enfoque simplificado
             
-            // Redirigir si es una URL
-            if (qrData.startsWith('http://') || qrData.startsWith('https://')) {
-                setTimeout(() => {
-                    window.location.href = qrData;
-                }, 500);
+            // En este ejemplo, asumiremos que el código QR contiene el número del estudiante
+            // y que la respuesta se determina por cómo se gira el QR al escanearlo
+            // Esto requeriría modificar el generador QR para incluir información de orientación
+            
+            // Por ahora, simplemente tomaremos el número del estudiante y pediremos que seleccionen la respuesta manualmente
+            // En una implementación real, necesitarías analizar la orientación del QR
+            
+            const studentNumber = qrData;
+            const student = students.find(s => s.number === studentNumber);
+            
+            if (!student) {
+                alert(`Estudiante con número ${studentNumber} no encontrado`);
+                return;
             }
             
-            // Aquí puedes agregar tu lógica para procesar las fichas CAL
-            // Ejemplo: verificar estudiantes, registrar respuestas, etc.
+            // Mostrar diálogo para seleccionar respuesta
+            const answer = prompt(`Estudiante: ${student.name}\nSeleccione respuesta (A, B, C, D):`).toUpperCase();
+            
+            if (['A', 'B', 'C', 'D'].includes(answer)) {
+                registerStudentResponse(student.id, answer);
+            } else {
+                alert('Respuesta no válida');
+            }
         }
-
+        
+        function registerStudentResponse(studentId, answer) {
+            if (currentQuestionIndex === -1) {
+                alert('No hay pregunta activa');
+                return;
+            }
+            
+            // Inicializar estructura de respuestas si no existe
+            if (!studentResponses[studentId]) {
+                studentResponses[studentId] = {
+                    responses: {},
+                    score: 0
+                };
+            }
+            
+            // Registrar respuesta
+            studentResponses[studentId].responses[currentQuestionIndex] = answer;
+            
+            // Recalcular puntaje
+            calculateStudentScore(studentId);
+            
+            // Actualizar UI
+            updatePendingStudents();
+            updateQuestionStats();
+            updateRanking();
+            saveToLocalStorage();
+            
+            // Mostrar confirmación
+            const student = students.find(s => s.id === studentId);
+            document.getElementById('scan-result').innerHTML = `
+                <p>Respuesta registrada para ${student.name}: ${answer}</p>
+            `;
+        }
+        
+        function calculateStudentScore(studentId) {
+            if (!studentResponses[studentId]) return;
+            
+            let correctCount = 0;
+            let totalAnswered = 0;
+            
+            Object.entries(studentResponses[studentId].responses).forEach(([qIndex, answer]) => {
+                const question = questions[parseInt(qIndex)];
+                if (question && answer === question.correctAnswer) {
+                    correctCount++;
+                }
+                totalAnswered++;
+            });
+            
+            // Calcular nota sobre 5 (proporción de respuestas correctas)
+            studentResponses[studentId].score = totalAnswered > 0 ? (correctCount / totalAnswered) * 5 : 0;
+        }
+        
+        // Funciones de actualización de UI
+        function updatePendingStudents() {
+            const pendingList = document.getElementById('pending-students');
+            pendingList.innerHTML = '';
+            
+            if (currentQuestionIndex === -1 || questions.length === 0 || students.length === 0) {
+                pendingList.innerHTML = '<p>No hay estudiantes pendientes</p>';
+                document.getElementById('answered-count').textContent = '0';
+                document.getElementById('response-progress').style.width = '0%';
+                return;
+            }
+            
+            let answeredCount = 0;
+            
+            students.forEach(student => {
+                const hasAnswered = studentResponses[student.id] && 
+                                    studentResponses[student.id].responses[currentQuestionIndex] !== undefined;
+                
+                if (hasAnswered) {
+                    answeredCount++;
+                } else {
+                    const item = document.createElement('div');
+                    item.className = 'student-item';
+                    item.textContent = `${student.number}: ${student.name}`;
+                    pendingList.appendChild(item);
+                }
+            });
+            
+            document.getElementById('answered-count').textContent = answeredCount;
+            const progressPercent = (answeredCount / students.length) * 100;
+            document.getElementById('response-progress').style.width = `${progressPercent}%`;
+        }
+        
+        function updateQuestionStats() {
+            const statsContainer = document.getElementById('question-stats');
+            statsContainer.innerHTML = '';
+            
+            if (currentQuestionIndex === -1 || questions.length === 0) {
+                return;
+            }
+            
+            // Inicializar contadores
+            const question = questions[currentQuestionIndex];
+            const stats = {
+                A: 0,
+                B: 0,
+                C: 0,
+                D: 0
+            };
+            
+            // Contar respuestas
+            Object.values(studentResponses).forEach(student => {
+                const answer = student.responses[currentQuestionIndex];
+                if (answer && stats.hasOwnProperty(answer)) {
+                    stats[answer]++;
+                }
+            });
+            
+            // Mostrar estadísticas
+            ['A', 'B', 'C', 'D'].forEach(letter => {
+                const statDiv = document.createElement('div');
+                statDiv.className = 'answer-stat';
+                
+                const letterDiv = document.createElement('div');
+                letterDiv.className = 'answer-letter';
+                letterDiv.textContent = letter;
+                if (letter === question.correctAnswer) {
+                    letterDiv.style.color = 'green';
+                    letterDiv.style.fontWeight = 'bold';
+                }
+                
+                const countDiv = document.createElement('div');
+                countDiv.className = 'answer-count';
+                countDiv.textContent = stats[letter];
+                
+                statDiv.appendChild(letterDiv);
+                statDiv.appendChild(countDiv);
+                statsContainer.appendChild(statDiv);
+            });
+        }
+        
+        function updateRanking() {
+            const rankingList = document.getElementById('ranking-list');
+            rankingList.innerHTML = '';
+            
+            if (students.length === 0) {
+                rankingList.innerHTML = '<p>No hay estudiantes registrados</p>';
+                return;
+            }
+            
+            // Crear array de estudiantes con sus puntajes
+            const rankedStudents = students.map(student => {
+                const score = studentResponses[student.id] ? studentResponses[student.id].score : 0;
+                return {
+                    id: student.id,
+                    number: student.number,
+                    name: student.name,
+                    score: score
+                };
+            });
+            
+            // Ordenar por puntaje (descendente)
+            rankedStudents.sort((a, b) => b.score - a.score);
+            
+            // Mostrar ranking
+            rankedStudents.forEach((student, index) => {
+                const item = document.createElement('div');
+                item.className = 'ranking-item';
+                
+                const position = document.createElement('span');
+                position.className = 'ranking-position';
+                position.textContent = `#${index + 1}`;
+                
+                const info = document.createElement('span');
+                info.textContent = `${student.number}: ${student.name}`;
+                
+                const score = document.createElement('span');
+                score.textContent = student.score.toFixed(2);
+                
+                item.appendChild(position);
+                item.appendChild(info);
+                item.appendChild(score);
+                rankingList.appendChild(item);
+            });
+        }
+        
+        // Funciones de exportación
+        function exportResults() {
+            if (students.length === 0 || questions.length === 0) {
+                alert('No hay datos para exportar');
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,";
+            
+            // Encabezados
+            const headers = ["Nombre", "Calificación"];
+            questions.forEach((q, i) => {
+                headers.push(`P${i+1} (Correcta: ${q.correctAnswer})`);
+                headers.push(`Respuesta P${i+1}`);
+            });
+            
+            csvContent += headers.join(",") + "\n";
+            
+            // Datos de cada estudiante
+            students.forEach(student => {
+                const studentData = [];
+                studentData.push(`"${student.name}"`);
+                
+                const score = studentResponses[student.id] ? studentResponses[student.id].score.toFixed(2) : "0.00";
+                studentData.push(score);
+                
+                questions.forEach((q, i) => {
+                    const correct = q.correctAnswer;
+                    studentData.push(correct);
+                    
+                    const response = studentResponses[student.id] && studentResponses[student.id].responses[i];
+                    studentData.push(response || "");
+                });
+                
+                csvContent += studentData.join(",") + "\n";
+            });
+            
+            // Descargar archivo
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "resultados_evaluacion.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        // Funciones de persistencia
+        function saveToLocalStorage() {
+            localStorage.setItem('qrEvaluationSystem_students', JSON.stringify(students));
+            localStorage.setItem('qrEvaluationSystem_questions', JSON.stringify(questions));
+            localStorage.setItem('qrEvaluationSystem_responses', JSON.stringify(studentResponses));
+            localStorage.setItem('qrEvaluationSystem_currentQuestion', currentQuestionIndex);
+        }
+        
+        function loadFromLocalStorage() {
+            const savedStudents = localStorage.getItem('qrEvaluationSystem_students');
+            const savedQuestions = localStorage.getItem('qrEvaluationSystem_questions');
+            const savedResponses = localStorage.getItem('qrEvaluationSystem_responses');
+            const savedCurrentQuestion = localStorage.getItem('qrEvaluationSystem_currentQuestion');
+            
+            if (savedStudents) {
+                students = JSON.parse(savedStudents);
+                updateStudentsList();
+            }
+            
+            if (savedQuestions) {
+                questions = JSON.parse(savedQuestions);
+            }
+            
+            if (savedResponses) {
+                studentResponses = JSON.parse(savedResponses);
+            }
+            
+            if (savedCurrentQuestion !== null) {
+                currentQuestionIndex = parseInt(savedCurrentQuestion);
+            }
+            
+            if (questions.length > 0) {
+                updateQuestionDisplay();
+            }
+            
+            updateRanking();
+        }
+        
+        // Función para actualizar toda la UI
+        function updateUI() {
+            updateStudentsList();
+            updateQuestionDisplay();
+            updatePendingStudents();
+            updateQuestionStats();
+            updateRanking();
+        }
+        
         // Limpieza al cerrar la página
         window.addEventListener('beforeunload', stopCamera);
         
