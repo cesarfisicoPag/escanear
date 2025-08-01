@@ -100,6 +100,7 @@
             padding: 10px;
             background: #e8f0fe;
             border-radius: 5px;
+            transition: font-size 0.3s;
         }
         .answer-option {
             padding: 8px;
@@ -199,13 +200,16 @@
             display: flex;
             justify-content: space-between;
             margin: 10px 0;
+            align-items: center;
         }
         .text-size-control {
             display: flex;
             align-items: center;
+            width: 150px;
         }
-        .text-size-control button {
-            margin: 0 5px;
+        .text-size-control input {
+            margin: 0 10px;
+            flex-grow: 1;
         }
         .scanning-overlay {
             position: absolute;
@@ -258,6 +262,13 @@
         }
         .file-label:hover {
             background: #5a6268;
+        }
+        #scan-result {
+            min-height: 50px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -333,6 +344,7 @@
                         </div>
                         <div class="text-size-control">
                             <button onclick="decreaseTextSize()" class="secondary">A-</button>
+                            <input type="range" id="text-size-slider" min="12" max="36" value="18" step="2" oninput="updateTextSize(this.value)">
                             <button onclick="increaseTextSize()" class="secondary">A+</button>
                         </div>
                     </div>
@@ -435,6 +447,9 @@
             // Event listeners para botones de cámara
             document.getElementById('startButton').addEventListener('click', startCamera);
             document.getElementById('stopButton').addEventListener('click', stopCamera);
+            
+            // Configurar tamaño de texto inicial
+            updateTextSize(18);
         });
         
         // Funciones de gestión de pestañas
@@ -715,6 +730,7 @@
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 updateQuestionDisplay();
+                resetCameraForNewQuestion();
             }
         }
         
@@ -722,6 +738,16 @@
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 updateQuestionDisplay();
+                resetCameraForNewQuestion();
+            }
+        }
+        
+        function resetCameraForNewQuestion() {
+            // Si la cámara está activa, reiniciar el escaneo para la nueva pregunta
+            if (videoStream && scanningInterval) {
+                cancelAnimationFrame(scanningInterval);
+                scanningInterval = null;
+                startQRDetection();
             }
         }
         
@@ -766,17 +792,25 @@
         }
         
         function increaseTextSize() {
-            const questionDisplay = document.getElementById('question-display');
-            const currentSize = parseInt(window.getComputedStyle(questionDisplay).fontSize);
-            questionDisplay.style.fontSize = (currentSize + 2) + 'px';
+            const slider = document.getElementById('text-size-slider');
+            const newSize = parseInt(slider.value) + 2;
+            if (newSize <= parseInt(slider.max)) {
+                slider.value = newSize;
+                updateTextSize(newSize);
+            }
         }
         
         function decreaseTextSize() {
-            const questionDisplay = document.getElementById('question-display');
-            const currentSize = parseInt(window.getComputedStyle(questionDisplay).fontSize);
-            if (currentSize > 12) {
-                questionDisplay.style.fontSize = (currentSize - 2) + 'px';
+            const slider = document.getElementById('text-size-slider');
+            const newSize = parseInt(slider.value) - 2;
+            if (newSize >= parseInt(slider.min)) {
+                slider.value = newSize;
+                updateTextSize(newSize);
             }
+        }
+        
+        function updateTextSize(size) {
+            document.getElementById('question-display').style.fontSize = `${size}px`;
         }
         
         // Funciones de cámara y escaneo QR
@@ -840,6 +874,11 @@
             document.getElementById('startButton').disabled = false;
             document.getElementById('stopButton').disabled = true;
             video.srcObject = null;
+            
+            // Limpiar el video
+            video.pause();
+            video.srcObject = null;
+            document.getElementById('scan-result').innerHTML = '';
         }
         
         function startQRDetection() {
@@ -876,8 +915,9 @@
                 });
                 
                 if (code) {
-                    handleQRDetection(code.data);
-                    return; // Detener el escaneo si se encontró un código
+                    handleQRDetection(code);
+                    scanningInterval = requestAnimationFrame(scanFrame); // Continuar escaneando
+                    return;
                 }
                 
                 scanningInterval = requestAnimationFrame(scanFrame);
@@ -886,37 +926,64 @@
             scanFrame();
         }
         
-        function handleQRDetection(qrData) {
-            // Detectar la respuesta basada en la orientación del QR
-            // En el generador, las respuestas están en posiciones fijas:
-            // Arriba: A, Derecha: D, Abajo: C, Izquierda: B
-            
-            // Para determinar la orientación, necesitamos analizar la posición de los patrones de sincronización
-            // Esto es complejo sin acceso a los metadatos del QR, así que usaremos un enfoque simplificado
-            
-            // En este ejemplo, asumiremos que el código QR contiene el número del estudiante
-            // y que la respuesta se determina por cómo se gira el QR al escanearlo
-            // Esto requeriría modificar el generador QR para incluir información de orientación
-            
-            // Por ahora, simplemente tomaremos el número del estudiante y pediremos que seleccionen la respuesta manualmente
-            // En una implementación real, necesitarías analizar la orientación del QR
-            
-            const studentNumber = qrData;
-            const student = students.find(s => s.number === studentNumber);
-            
-            if (!student) {
-                alert(`Estudiante con número ${studentNumber} no encontrado`);
+        function handleQRDetection(code) {
+            if (currentQuestionIndex === -1) {
+                document.getElementById('scan-result').innerHTML = '<p>No hay pregunta activa para registrar respuesta</p>';
                 return;
             }
             
-            // Mostrar diálogo para seleccionar respuesta
-            const answer = prompt(`Estudiante: ${student.name}\nSeleccione respuesta (A, B, C, D):`).toUpperCase();
+            // Determinar la respuesta basada en la orientación del QR
+            // Las posiciones de los patrones de sincronización nos dan la orientación
+            // Los patrones están en las esquinas: topLeft, topRight, bottomLeft
             
-            if (['A', 'B', 'C', 'D'].includes(answer)) {
-                registerStudentResponse(student.id, answer);
+            // Calcular vectores entre los patrones para determinar la orientación
+            const topLeft = code.location.topLeftCorner;
+            const topRight = code.location.topRightCorner;
+            const bottomLeft = code.location.bottomLeftCorner;
+            
+            // Vector horizontal (de topLeft a topRight)
+            const vecHorizontal = {
+                x: topRight.x - topLeft.x,
+                y: topRight.y - topLeft.y
+            };
+            
+            // Vector vertical (de topLeft a bottomLeft)
+            const vecVertical = {
+                x: bottomLeft.x - topLeft.x,
+                y: bottomLeft.y - topLeft.y
+            };
+            
+            // Calcular el ángulo de rotación
+            const angle = Math.atan2(vecHorizontal.y, vecHorizontal.x) * 180 / Math.PI;
+            
+            // Determinar la respuesta basada en el ángulo
+            let answer;
+            if (angle >= -45 && angle < 45) {
+                answer = 'A'; // Orientación normal (arriba)
+            } else if (angle >= 45 && angle < 135) {
+                answer = 'D'; // Rotado 90° derecha
+            } else if (angle >= 135 || angle < -135) {
+                answer = 'C'; // Rotado 180° (abajo)
             } else {
-                alert('Respuesta no válida');
+                answer = 'B'; // Rotado 90° izquierda
             }
+            
+            const studentNumber = code.data;
+            const student = students.find(s => s.number === studentNumber);
+            
+            if (!student) {
+                document.getElementById('scan-result').innerHTML = `<p>Estudiante con número ${studentNumber} no encontrado</p>`;
+                return;
+            }
+            
+            // Registrar respuesta automáticamente
+            registerStudentResponse(student.id, answer);
+            
+            // Mostrar confirmación
+            document.getElementById('scan-result').innerHTML = `
+                <p>Respuesta registrada para ${student.name}: ${answer}</p>
+                <p>Orientación detectada: ${angle.toFixed(1)}°</p>
+            `;
         }
         
         function registerStudentResponse(studentId, answer) {
@@ -944,12 +1011,6 @@
             updateQuestionStats();
             updateRanking();
             saveToLocalStorage();
-            
-            // Mostrar confirmación
-            const student = students.find(s => s.id === studentId);
-            document.getElementById('scan-result').innerHTML = `
-                <p>Respuesta registrada para ${student.name}: ${answer}</p>
-            `;
         }
         
         function calculateStudentScore(studentId) {
