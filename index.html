@@ -9,45 +9,45 @@
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background-color: #f5f5f5;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
         }
         .container {
-            max-width: 1200px;
+            max-width: 100%;
             margin: 0 auto;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             flex-grow: 1;
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-gap: 20px;
+            grid-template-columns: 1fr;
+            grid-gap: 15px;
         }
         .section {
-            padding: 15px;
-            border-radius: 8px;
+            padding: 12px;
+            border-radius: 6px;
             background: #f9f9f9;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #4285F4;
         }
         #videoContainer {
             position: relative;
-            margin: 10px auto;
+            margin: 8px auto;
             width: 100%;
-            max-width: 400px;
+            max-width: 300px;
         }
         #video {
             width: 100%;
-            border-radius: 8px;
+            border-radius: 6px;
             display: block;
             background: #000;
         }
@@ -58,11 +58,12 @@
             background: #4285F4;
             color: white;
             border: none;
-            padding: 8px 12px;
-            border-radius: 5px;
+            padding: 6px 10px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 14px;
-            margin: 3px;
+            font-size: 13px;
+            margin: 2px;
+            white-space: nowrap;
         }
         button:hover {
             background: #3367D6;
@@ -87,45 +88,49 @@
             background: #218838;
         }
         input, select, textarea {
-            padding: 8px;
-            margin: 5px 0;
+            padding: 6px;
+            margin: 4px 0;
             width: 100%;
             box-sizing: border-box;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 3px;
+            font-size: 14px;
         }
         .question-text {
-            font-size: 18px;
-            margin: 10px 0;
-            padding: 10px;
+            font-size: 16px;
+            margin: 8px 0;
+            padding: 8px;
             background: #e8f0fe;
-            border-radius: 5px;
+            border-radius: 4px;
             transition: font-size 0.3s;
         }
-        .answer-option {
-            padding: 8px;
+.answer-option {
+            padding: 10px;
             margin: 5px 0;
             background: #f1f1f1;
             border-radius: 4px;
+            transition: font-size 0.3s, background-color 0.3s;
+            cursor: pointer;
         }
-        .correct-answer {
-            background: #d4edda;
-            border-left: 4px solid #28a745;
+        
+        .answer-option:hover {
+            background-color: #e0e0e0;
         }
         .student-list {
-            max-height: 200px;
+            max-height: 150px;
             overflow-y: auto;
             border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 5px;
+            border-radius: 4px;
+            padding: 4px;
+            font-size: 14px;
         }
         .student-item {
-            padding: 5px;
-            margin: 3px 0;
+            padding: 4px;
+            margin: 2px 0;
             background: #f8f9fa;
-            border-radius: 3px;
-            display: flex;
-            justify-content: space-between;
+            border-radius: 2px;
+            display: inline-block;
+            margin-right: 5px;
         }
         .student-item.answered {
             text-decoration: line-through;
@@ -134,47 +139,48 @@
         .stats-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
         .stat-item {
             flex: 1;
-            min-width: 100px;
-            padding: 10px;
+            min-width: 80px;
+            padding: 8px;
             background: #e9ecef;
-            border-radius: 5px;
+            border-radius: 4px;
             text-align: center;
         }
         .stat-value {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: bold;
             color: #4285F4;
         }
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #6c757d;
         }
         .progress-container {
             width: 100%;
             background: #e9ecef;
-            border-radius: 5px;
-            margin: 10px 0;
+            border-radius: 4px;
+            margin: 8px 0;
         }
         .progress-bar {
-            height: 20px;
+            height: 15px;
             background: #4285F4;
-            border-radius: 5px;
+            border-radius: 4px;
             width: 0%;
             transition: width 0.3s;
         }
         .ranking-list {
-            max-height: 300px;
+            max-height: 200px;
             overflow-y: auto;
         }
         .ranking-item {
             display: flex;
             justify-content: space-between;
-            padding: 8px;
+            padding: 6px;
             border-bottom: 1px solid #eee;
+            font-size: 14px;
         }
         .ranking-position {
             font-weight: bold;
@@ -183,32 +189,34 @@
         .answer-stats {
             display: flex;
             justify-content: space-around;
-            margin-top: 10px;
+            margin-top: 8px;
         }
         .answer-stat {
             text-align: center;
-            padding: 5px;
+            padding: 4px;
             flex: 1;
         }
         .answer-letter {
             font-weight: bold;
         }
         .answer-count {
-            font-size: 18px;
+            font-size: 16px;
         }
         .controls-row {
             display: flex;
             justify-content: space-between;
-            margin: 10px 0;
+            margin: 8px 0;
             align-items: center;
+            flex-wrap: wrap;
         }
         .text-size-control {
             display: flex;
             align-items: center;
-            width: 150px;
+            width: 130px;
+            margin-top: 5px;
         }
         .text-size-control input {
-            margin: 0 10px;
+            margin: 0 5px;
             flex-grow: 1;
         }
         .scanning-overlay {
@@ -229,14 +237,15 @@
         }
         .tab-container {
             display: flex;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .tab {
-            padding: 8px 15px;
+            padding: 6px 12px;
             background: #e9ecef;
-            margin-right: 5px;
-            border-radius: 5px 5px 0 0;
+            margin-right: 4px;
+            border-radius: 4px 4px 0 0;
             cursor: pointer;
+            font-size: 14px;
         }
         .tab.active {
             background: #4285F4;
@@ -253,22 +262,62 @@
         }
         .file-label {
             display: inline-block;
-            padding: 8px 12px;
+            padding: 6px 10px;
             background: #6c757d;
             color: white;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            margin: 5px 0;
+            margin: 4px 0;
+            font-size: 14px;
         }
         .file-label:hover {
             background: #5a6268;
         }
         #scan-result {
-            min-height: 50px;
-            padding: 10px;
+            min-height: 40px;
+            padding: 8px;
             background: #f8f9fa;
-            border-radius: 5px;
+            border-radius: 4px;
+            margin-top: 8px;
+            font-size: 14px;
+        }
+        .questions-responses {
+            width: 100%;
+            border-collapse: collapse;
             margin-top: 10px;
+            font-size: 14px;
+        }
+        .questions-responses th, .questions-responses td {
+            border: 1px solid #ddd;
+            padding: 6px;
+            text-align: left;
+        }
+        .questions-responses th {
+            background-color: #f2f2f2;
+        }
+        .qr-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            z-index: 10;
+        }
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 1fr 1fr;
+                padding: 20px;
+                grid-gap: 20px;
+            }
+            .section {
+                padding: 15px;
+            }
+            #videoContainer {
+                max-width: 400px;
+            }
         }
     </style>
 </head>
@@ -284,7 +333,7 @@
                 
                 <div id="import-students" class="tab-content active">
                     <input type="file" id="students-file" class="file-input" accept=".csv">
-                    <label for="students-file" class="file-label">Seleccionar archivo CSV de estudiantes</label>
+                    <label for="students-file" class="file-label">Seleccionar archivo CSV</label>
                     <button onclick="importStudents()">Importar Estudiantes</button>
                     <p>Formato CSV: numero,nombre</p>
                 </div>
@@ -298,7 +347,7 @@
                 <div class="student-list" id="students-list">
                     <!-- Lista de estudiantes se cargará aquí -->
                 </div>
-                <button onclick="clearStudents()" class="danger">Limpiar Lista</button>
+                <button onclick="clearAll()" class="danger">Limpiar Todo</button>
             </div>
             
             <div class="section">
@@ -310,7 +359,7 @@
                 
                 <div id="import-questions" class="tab-content active">
                     <input type="file" id="questions-file" class="file-input" accept=".csv">
-                    <label for="questions-file" class="file-label">Seleccionar archivo CSV de preguntas</label>
+                    <label for="questions-file" class="file-label">Seleccionar archivo CSV</label>
                     <button onclick="importQuestions()">Importar Preguntas</button>
                     <p>Formato CSV: pregunta,respuesta_a,respuesta_b,respuesta_c,respuesta_d,respuesta_correcta</p>
                 </div>
@@ -330,6 +379,19 @@
                     </select>
                     <button onclick="addQuestion()">Agregar Pregunta</button>
                 </div>
+                
+                <div class="section-title" style="margin-top: 15px;">Preguntas y Respuestas</div>
+                <table class="questions-responses" id="questions-table">
+                    <thead>
+                        <tr>
+                            <th>Pregunta</th>
+                            <th>Respuesta Correcta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Las filas se agregarán dinámicamente -->
+                    </tbody>
+                </table>
             </div>
         </div>
         
@@ -367,6 +429,7 @@
                     </div>
                     
                     <div id="videoContainer">
+                        <div id="qr-count" class="qr-count" style="display: none;">QRs: 0</div>
                         <video id="video" playsinline autoplay></video>
                         <canvas id="canvas"></canvas>
                         <div class="scanning-overlay"></div>
@@ -415,12 +478,14 @@
         const ctx = canvas.getContext('2d');
         let lastScanTime = 0;
         const scanThrottle = 200; // ms entre escaneos
+        let qrCount = 0;
+        let qrCountTimeout = null;
         
         // Datos de la aplicación
         let students = [];
         let questions = [];
         let currentQuestionIndex = -1;
-        let studentResponses = {}; // {studentId: {responses: {questionIndex: answer}, score: number}}
+        let studentResponses = {}; // {studentId: {responses: {questionIndex: answer}, score: number}
         let questionResponses = {}; // {questionIndex: {A: count, B: count, C: count, D: count}}
         
         // Configuración optimizada de cámara
@@ -445,7 +510,18 @@
             loadFromLocalStorage();
             
             // Event listeners para botones de cámara
-            document.getElementById('startButton').addEventListener('click', startCamera);
+            document.getElementById('startButton').addEventListener('click', function() {
+                if (questions.length === 0) {
+                    alert('No hay preguntas cargadas para evaluar');
+                    return;
+                }
+                if (students.length === 0) {
+                    alert('No hay estudiantes registrados');
+                    return;
+                }
+                startCamera();
+            });
+            
             document.getElementById('stopButton').addEventListener('click', stopCamera);
             
             // Configurar tamaño de texto inicial
@@ -550,14 +626,28 @@
             reader.readAsText(file);
         }
         
-        function clearStudents() {
-            if (confirm('¿Está seguro que desea eliminar todos los estudiantes?')) {
+        function clearAll() {
+            if (confirm('¿Está seguro que desea eliminar TODOS los datos (estudiantes, preguntas y respuestas)?')) {
                 students = [];
+                questions = [];
                 studentResponses = {};
+                currentQuestionIndex = -1;
+                
                 updateStudentsList();
+                updateQuestionsTable();
+                updateQuestionDisplay();
                 updatePendingStudents();
                 updateRanking();
                 saveToLocalStorage();
+                
+                document.getElementById('total-students').textContent = '0';
+                document.getElementById('answered-count').textContent = '0';
+                document.getElementById('response-progress').style.width = '0%';
+                document.getElementById('total-questions').textContent = '0';
+                document.getElementById('current-question-number').textContent = '0';
+                
+                // Detener la cámara si está activa
+                stopCamera();
             }
         }
         
@@ -570,15 +660,9 @@
                 return;
             }
             
-            students.forEach(student => {
-                const item = document.createElement('div');
-                item.className = 'student-item';
-                item.innerHTML = `
-                    <span>${student.number}: ${student.name}</span>
-                    <button onclick="removeStudent('${student.id}')" class="danger">X</button>
-                `;
-                list.appendChild(item);
-            });
+            // Mostrar estudiantes en formato horizontal separados por comas
+            const studentsText = students.map(student => `${student.number}: ${student.name}`).join(', ');
+            list.innerHTML = `<div class="student-item">${studentsText}</div>`;
             
             document.getElementById('total-students').textContent = students.length;
         }
@@ -621,6 +705,7 @@
             questions.push(question);
             saveToLocalStorage();
             updateQuestionDisplay();
+            updateQuestionsTable();
             
             // Limpiar campos
             document.getElementById('question-text').value = '';
@@ -690,6 +775,7 @@
                 saveToLocalStorage();
                 alert(`Se importaron ${imported} preguntas`);
                 fileInput.value = '';
+                updateQuestionsTable();
                 
                 // Si es la primera pregunta, mostrarla
                 if (questions.length > 0 && currentQuestionIndex === -1) {
@@ -699,6 +785,25 @@
             };
             
             reader.readAsText(file);
+        }
+        
+        function updateQuestionsTable() {
+            const tableBody = document.querySelector('#questions-table tbody');
+            tableBody.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const row = document.createElement('tr');
+                
+                const questionCell = document.createElement('td');
+                questionCell.textContent = question.text;
+                
+                const answerCell = document.createElement('td');
+                answerCell.textContent = question.correctAnswer;
+                
+                row.appendChild(questionCell);
+                row.appendChild(answerCell);
+                tableBody.appendChild(row);
+            });
         }
         
         function removeQuestion(index) {
@@ -721,6 +826,7 @@
                 
                 saveToLocalStorage();
                 updateQuestionDisplay();
+                updateQuestionsTable();
                 updateRanking();
             }
         }
@@ -751,7 +857,7 @@
             }
         }
         
-        function updateQuestionDisplay() {
+              function updateQuestionDisplay() {
             const questionDisplay = document.getElementById('question-display');
             const answersDisplay = document.getElementById('answers-display');
             const currentQuestionNumber = document.getElementById('current-question-number');
@@ -774,14 +880,11 @@
             document.getElementById('prev-question').disabled = currentQuestionIndex === 0;
             document.getElementById('next-question').disabled = currentQuestionIndex === questions.length - 1;
             
-            // Mostrar respuestas
+            // Mostrar respuestas sin indicar cuál es la correcta
             answersDisplay.innerHTML = '';
             ['A', 'B', 'C', 'D'].forEach(letter => {
                 const answerDiv = document.createElement('div');
                 answerDiv.className = 'answer-option';
-                if (letter === question.correctAnswer) {
-                    answerDiv.classList.add('correct-answer');
-                }
                 answerDiv.textContent = `${letter}. ${question.answers[letter]}`;
                 answersDisplay.appendChild(answerDiv);
             });
@@ -790,8 +893,7 @@
             updatePendingStudents();
             updateQuestionStats();
         }
-        
-        function increaseTextSize() {
+               function increaseTextSize() {
             const slider = document.getElementById('text-size-slider');
             const newSize = parseInt(slider.value) + 2;
             if (newSize <= parseInt(slider.max)) {
@@ -810,7 +912,13 @@
         }
         
         function updateTextSize(size) {
-            document.getElementById('question-display').style.fontSize = `${size}px`;
+            const questionDisplay = document.getElementById('question-display');
+            const answerOptions = document.querySelectorAll('.answer-option');
+            
+            questionDisplay.style.fontSize = `${size}px`;
+            answerOptions.forEach(option => {
+                option.style.fontSize = `${size - 2}px`;
+            });
         }
         
         // Funciones de cámara y escaneo QR
@@ -879,11 +987,14 @@
             video.pause();
             video.srcObject = null;
             document.getElementById('scan-result').innerHTML = '';
+            document.getElementById('qr-count').style.display = 'none';
         }
         
         function startQRDetection() {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
+            qrCount = 0;
+            updateQRCount();
             
             function scanFrame() {
                 if (!videoStream || video.readyState !== video.HAVE_ENOUGH_DATA) {
@@ -915,6 +1026,8 @@
                 });
                 
                 if (code) {
+                    qrCount++;
+                    updateQRCount();
                     handleQRDetection(code);
                     scanningInterval = requestAnimationFrame(scanFrame); // Continuar escaneando
                     return;
@@ -924,6 +1037,22 @@
             }
             
             scanFrame();
+        }
+        
+        function updateQRCount() {
+            const qrCountElement = document.getElementById('qr-count');
+            qrCountElement.textContent = `QRs: ${qrCount}`;
+            qrCountElement.style.display = 'block';
+            
+            // Reiniciar el contador después de 2 segundos
+            if (qrCountTimeout) {
+                clearTimeout(qrCountTimeout);
+            }
+            
+            qrCountTimeout = setTimeout(() => {
+                qrCount = 0;
+                qrCountElement.style.display = 'none';
+            }, 2000);
         }
         
         function handleQRDetection(code) {
@@ -1044,6 +1173,7 @@
             }
             
             let answeredCount = 0;
+            const pendingStudents = [];
             
             students.forEach(student => {
                 const hasAnswered = studentResponses[student.id] && 
@@ -1052,12 +1182,16 @@
                 if (hasAnswered) {
                     answeredCount++;
                 } else {
-                    const item = document.createElement('div');
-                    item.className = 'student-item';
-                    item.textContent = `${student.number}: ${student.name}`;
-                    pendingList.appendChild(item);
+                    pendingStudents.push(`${student.number}: ${student.name}`);
                 }
             });
+            
+            // Mostrar estudiantes pendientes en formato horizontal separados por comas
+            if (pendingStudents.length > 0) {
+                pendingList.innerHTML = `<div class="student-item">${pendingStudents.join(', ')}</div>`;
+            } else {
+                pendingList.innerHTML = '<p>Todos los estudiantes han respondido</p>';
+            }
             
             document.getElementById('answered-count').textContent = answeredCount;
             const progressPercent = (answeredCount / students.length) * 100;
@@ -1148,7 +1282,7 @@
                 info.textContent = `${student.number}: ${student.name}`;
                 
                 const score = document.createElement('span');
-                score.textContent = student.score.toFixed(2);
+                score.textContent = `${student.score.toFixed(2)}/5`;
                 
                 item.appendChild(position);
                 item.appendChild(info);
@@ -1167,9 +1301,9 @@
             let csvContent = "data:text/csv;charset=utf-8,";
             
             // Encabezados
-            const headers = ["Nombre", "Calificación"];
+            const headers = ["Número", "Nombre", "Nota (sobre 5)"];
             questions.forEach((q, i) => {
-                headers.push(`P${i+1} (Correcta: ${q.correctAnswer})`);
+                headers.push(`P${i+1} (${q.correctAnswer})`);
                 headers.push(`Respuesta P${i+1}`);
             });
             
@@ -1178,6 +1312,7 @@
             // Datos de cada estudiante
             students.forEach(student => {
                 const studentData = [];
+                studentData.push(student.number);
                 studentData.push(`"${student.name}"`);
                 
                 const score = studentResponses[student.id] ? studentResponses[student.id].score.toFixed(2) : "0.00";
@@ -1185,13 +1320,30 @@
                 
                 questions.forEach((q, i) => {
                     const correct = q.correctAnswer;
-                    studentData.push(correct);
                     
                     const response = studentResponses[student.id] && studentResponses[student.id].responses[i];
                     studentData.push(response || "");
+                    studentData.push(response === correct ? "Correcta" : "Incorrecta");
                 });
                 
                 csvContent += studentData.join(",") + "\n";
+            });
+            
+            // Agregar estadísticas de preguntas
+            csvContent += "\n\nEstadísticas por pregunta\n";
+            csvContent += "Pregunta,Respuesta A,Respuesta B,Respuesta C,Respuesta D,Respuesta Correcta\n";
+            
+            questions.forEach((q, i) => {
+                const stats = { A: 0, B: 0, C: 0, D: 0 };
+                
+                Object.values(studentResponses).forEach(student => {
+                    const answer = student.responses[i];
+                    if (answer && stats.hasOwnProperty(answer)) {
+                        stats[answer]++;
+                    }
+                });
+                
+                csvContent += `"${q.text}",${stats.A},${stats.B},${stats.C},${stats.D},${q.correctAnswer}\n`;
             });
             
             // Descargar archivo
@@ -1225,6 +1377,7 @@
             
             if (savedQuestions) {
                 questions = JSON.parse(savedQuestions);
+                updateQuestionsTable();
             }
             
             if (savedResponses) {
@@ -1249,15 +1402,11 @@
             updatePendingStudents();
             updateQuestionStats();
             updateRanking();
+            updateQuestionsTable();
         }
         
         // Limpieza al cerrar la página
         window.addEventListener('beforeunload', stopCamera);
-        
-        // Intentar iniciar automáticamente en dispositivos móviles
-        if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-            document.getElementById('startButton').click();
-        }
     </script>
 </body>
 </html>
