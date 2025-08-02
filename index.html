@@ -676,26 +676,25 @@
                 </div>
             </div>
         </div>
-
+                    <div class="section-title">Evaluación</div>
+ <div class="question-info">
+                            Pregunta <span id="current-question-number">0</span> de <span id="total-questions">0</span>
+                        </div>
         <div class="right-column">
             <div class="section evaluation-grid">
                 <div class="section question-section">
-                    <div class="section-title">Evaluación</div>
                     <div id="current-question-container">
                         <div class="controls-container">
-                                                    
-                        <div class="question-info">
-                            Pregunta <span id="current-question-number">0</span> de <span id="total-questions">0</span>
+                            
                         </div>
-                        
-                        <div class="question-text" id="question-display" style="font-size: 20px;">
+                                 <div class="question-text" id="question-display" style="font-size: 20px;">
                             No hay preguntas cargadas
                         </div>
                         
                         <div id="answers-display">
                             <!-- Respuestas se cargarán aquí -->
                         </div>
-                        <div class="navigation-buttons">
+     <div class="navigation-buttons">
                                 <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
                                 <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
                             </div>
@@ -705,8 +704,7 @@
                                 <input type="range" id="text-size-slider" min="16" max="36" value="20" step="2" oninput="updateTextSize(this.value)">
                                 <button onclick="increaseTextSize()" class="secondary">A+</button>
                             </div>
-                        </div>
-
+</div>                   
                         <div class="controls-row">
                             <button id="startButton">Iniciar Escaneo</button>
                             <button id="stopButton" disabled>Detener</button>
@@ -890,8 +888,10 @@
             const password = document.getElementById('password').value;
             
             if (userDatabase[username] && userDatabase[username].password === password) {
+                // Guardar credenciales en localStorage
                 localStorage.setItem('qrEvaluationSystem_loggedIn', 'true');
                 localStorage.setItem('qrEvaluationSystem_username', username);
+                localStorage.setItem('qrEvaluationSystem_password', password); // Guardar contraseña para verificación posterior
                 localStorage.setItem('qrEvaluationSystem_role', userDatabase[username].role);
                 
                 document.getElementById('login-container').style.display = 'none';
@@ -904,10 +904,30 @@
         
         function checkLoginStatus() {
             const loggedIn = localStorage.getItem('qrEvaluationSystem_loggedIn') === 'true';
-            if (loggedIn) {
-                document.getElementById('login-container').style.display = 'none';
-                document.getElementById('main-content').style.display = 'block';
-                initializeApp();
+            const savedUsername = localStorage.getItem('qrEvaluationSystem_username');
+            const savedPassword = localStorage.getItem('qrEvaluationSystem_password');
+            
+            if (loggedIn && savedUsername && savedPassword) {
+                // Verificar si las credenciales guardadas coinciden con la base de datos
+                if (userDatabase[savedUsername] && userDatabase[savedUsername].password === savedPassword) {
+                    // Credenciales válidas, permitir acceso
+                    document.getElementById('login-container').style.display = 'none';
+                    document.getElementById('main-content').style.display = 'block';
+                    initializeApp();
+                } else {
+                    // Credenciales no coinciden, forzar nuevo login
+                    localStorage.removeItem('qrEvaluationSystem_loggedIn');
+                    localStorage.removeItem('qrEvaluationSystem_username');
+                    localStorage.removeItem('qrEvaluationSystem_password');
+                    localStorage.removeItem('qrEvaluationSystem_role');
+                    document.getElementById('login-container').style.display = 'flex';
+                    document.getElementById('main-content').style.display = 'none';
+                    alert('Las credenciales han cambiado. Por favor ingrese nuevamente.');
+                }
+            } else {
+                // No hay credenciales guardadas o no está logueado
+                document.getElementById('login-container').style.display = 'flex';
+                document.getElementById('main-content').style.display = 'none';
             }
         }
         
