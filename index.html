@@ -293,16 +293,19 @@
         .answer-count {
             font-size: 20px;
         }
-        
         .controls-row {
-            display: flex;
-            justify-content: space-between;
-            margin: 12px 0;
-            align-items: center;
-            flex-wrap: wrap;
-            width: 100%;
-        }
-        
+    display: flex;
+    justify-content: flex-start; /* Alinea los elementos al inicio */
+    align-items: center; /* Centra verticalmente los elementos */
+    gap: 10px; /* Espacio entre los botones */
+    margin: 12px 0;
+    width: 100%;
+}
+.controls-row button {
+    margin: 0; /* Elimina el margen que podría separarlos */
+    flex: none; /* Evita que los botones se estiren */
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+}
         .text-size-control {
             display: flex;
             align-items: center;
@@ -602,7 +605,7 @@
                         
                         <div class="controls-row">
                             <button id="startButton">Iniciar Escaneo</button>
-                            <button id="stopButton" disabled>Detener Escaneo</button>
+                            <button id="stopButton" disabled>Detener</button>
                         </div>
                     </div>
                 </div>
