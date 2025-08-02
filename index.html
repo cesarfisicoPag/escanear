@@ -339,8 +339,8 @@
             display: flex;
             justify-content: flex-start;
             align-items: center;
-            gap: 6px;
-            margin: 10px 0;
+            gap: 4px;
+            margin: 4px 0;
             width: 100%;
         }
         
@@ -687,7 +687,13 @@
                 
                 <!-- Contenedor de cámara y pendientes (derecha) -->
                 <div class="camera-pending-wrapper">
-                    <div class="section camera-section">
+<div class="section pending-section">
+                        <div class="section-title">Sin Responder</div>
+                        <div class="student-list" id="pending-students">
+                            <!-- Estudiantes pendientes se cargarán aquí -->
+                        </div>
+              
+      <div class="section camera-section">
                         <div id="videoContainer">
                             <div id="qr-count" class="qr-count" style="display: none;">QRs: 0</div>
                             <video id="video" playsinline autoplay></video>
@@ -705,12 +711,7 @@
                         </div>
                     </div>
                     
-                    <div class="section pending-section">
-                        <div class="section-title">Sin Responder</div>
-                        <div class="student-list" id="pending-students">
-                            <!-- Estudiantes pendientes se cargarán aquí -->
-                        </div>
-                        
+                                            
                         <div class="progress-container">
                             <div class="progress-bar" id="response-progress"></div>
                         </div>
