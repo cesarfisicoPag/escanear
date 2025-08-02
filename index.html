@@ -131,7 +131,11 @@
         textarea {
             min-height: 100px;
         }
-        
+        .navigation-buttons {
+    display: flex;         
+    gap: 10px;            
+    align-items: center;   
+}
         .question-text {
             font-size: 20px;
             margin: 15px 0;
@@ -581,8 +585,11 @@
                     <div id="current-question-container">
                         <div class="controls-row">
                             <div>
+<div class="navigation-buttons">
+
                                 <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
                                 <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
+                            </div>
                             </div>
                             <div class="text-size-control">
                                 <button onclick="decreaseTextSize()" class="secondary">A-</button>
