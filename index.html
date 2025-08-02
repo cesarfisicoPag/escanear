@@ -683,18 +683,7 @@
                     <div class="section-title">Evaluación</div>
                     <div id="current-question-container">
                         <div class="controls-container">
-                            <div class="navigation-buttons">
-                                <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
-                                <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
-                            </div>
-                            
-                            <div class="text-size-control">
-                                <button onclick="decreaseTextSize()" class="secondary">A-</button>
-                                <input type="range" id="text-size-slider" min="16" max="36" value="20" step="2" oninput="updateTextSize(this.value)">
-                                <button onclick="increaseTextSize()" class="secondary">A+</button>
-                            </div>
-                        </div>
-                        
+                                                    
                         <div class="question-info">
                             Pregunta <span id="current-question-number">0</span> de <span id="total-questions">0</span>
                         </div>
@@ -706,7 +695,18 @@
                         <div id="answers-display">
                             <!-- Respuestas se cargarán aquí -->
                         </div>
-                        
+                        <div class="navigation-buttons">
+                                <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
+                                <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
+                            </div>
+                            
+                            <div class="text-size-control">
+                                <button onclick="decreaseTextSize()" class="secondary">A-</button>
+                                <input type="range" id="text-size-slider" min="16" max="36" value="20" step="2" oninput="updateTextSize(this.value)">
+                                <button onclick="increaseTextSize()" class="secondary">A+</button>
+                            </div>
+                        </div>
+
                         <div class="controls-row">
                             <button id="startButton">Iniciar Escaneo</button>
                             <button id="stopButton" disabled>Detener</button>
