@@ -571,22 +571,7 @@
                     <button onclick="addQuestion()">Agregar Pregunta</button>
                 </div>
                 
-                <div class="section-title" style="margin-top: 15px;">Preguntas y Respuestas</div>
-                <table class="questions-responses" id="questions-table">
-                    <thead>
-                        <tr>
-                            <th>Pregunta</th>
-                            <th>Respuesta Correcta</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Las filas se agregarán dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        
-        <div class="right-column">
+              <div class="right-column">
             <div class="section evaluation-section">
                 <div class="section question-section">
                     <div class="section-title">Evaluación</div>
@@ -661,6 +646,21 @@
                 <div class="ranking-list" id="ranking-list">
                     <!-- Ranking se cargará aquí -->
                 </div>
+                <div class="section-title" style="margin-top: 15px;">Preguntas y Respuestas</div>
+                <table class="questions-responses" id="questions-table">
+                    <thead>
+                        <tr>
+                            <th>Pregunta</th>
+                            <th>Respuesta Correcta</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Las filas se agregarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
                 <button onclick="exportResults()" class="success">Exportar Resultados a CSV</button>
             </div>
         </div>
