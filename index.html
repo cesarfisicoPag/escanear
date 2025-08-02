@@ -59,7 +59,7 @@
             position: relative;
             margin: 10px auto;
             width: 100%;
-            max-width: 300px;
+            max-width: 150px; /* Reducido a la mitad */
         }
         
         #video {
@@ -159,13 +159,14 @@
         }
         
         .student-list {
-            max-height: 150px;
+            max-height: 100px; /* Reducido para optimizar espacio */
             overflow-y: auto;
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 8px;
             font-size: 16px;
             width: 100%;
+            margin-bottom: 5px; /* Reducir espacio */
         }
         
         .student-item {
@@ -215,7 +216,7 @@
             width: 100%;
             background: #e9ecef;
             border-radius: 8px;
-            margin: 12px 0;
+            margin: 5px 0; /* Reducir espacio */
         }
         
         .progress-bar {
@@ -441,6 +442,26 @@
             width: 100%;
         }
         
+        /* Nueva clase para el layout optimizado */
+        .evaluation-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .question-section {
+            order: 1;
+        }
+        
+        .camera-section {
+            order: 2;
+            margin: 0 auto;
+        }
+        
+        .pending-section {
+            order: 3;
+        }
+        
         @media (min-width: 768px) {
             .container {
                 display: grid;
@@ -457,6 +478,28 @@
             .mobile-columns > div {
                 flex: 1;
                 min-width: 300px;
+            }
+            
+            .evaluation-layout {
+                display: grid;
+                grid-template-areas:
+                    "question question"
+                    "camera pending";
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .question-section {
+                grid-area: question;
+            }
+            
+            .camera-section {
+                grid-area: camera;
+                margin: 0;
+            }
+            
+            .pending-section {
+                grid-area: pending;
             }
         }
     </style>
@@ -536,38 +579,42 @@
         </div>
         
         <div class="right-column">
-            <div class="section">
-                <div class="section-title">Evaluación</div>
-                <div id="current-question-container">
-                    <div class="controls-row">
-                        <div>
-                            <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
-                            <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
+            <div class="section evaluation-layout">
+                <div class="section question-section">
+                    <div class="section-title">Evaluación</div>
+                    <div id="current-question-container">
+                        <div class="controls-row">
+                            <div>
+                                <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
+                                <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
+                            </div>
+                            <div class="text-size-control">
+                                <button onclick="decreaseTextSize()" class="secondary">A-</button>
+                                <input type="range" id="text-size-slider" min="16" max="36" value="20" step="2" oninput="updateTextSize(this.value)">
+                                <button onclick="increaseTextSize()" class="secondary">A+</button>
+                            </div>
                         </div>
-                        <div class="text-size-control">
-                            <button onclick="decreaseTextSize()" class="secondary">A-</button>
-                            <input type="range" id="text-size-slider" min="16" max="36" value="20" step="2" oninput="updateTextSize(this.value)">
-                            <button onclick="increaseTextSize()" class="secondary">A+</button>
+                        
+                        <div class="question-info">
+                            Pregunta <span id="current-question-number">0</span> de <span id="total-questions">0</span>
+                        </div>
+                        
+                        <div class="question-text" id="question-display" style="font-size: 20px;">
+                            No hay preguntas cargadas
+                        </div>
+                        
+                        <div id="answers-display">
+                            <!-- Respuestas se cargarán aquí -->
+                        </div>
+                        
+                        <div class="controls-row">
+                            <button id="startButton">Iniciar Escaneo</button>
+                            <button id="stopButton" disabled>Detener Escaneo</button>
                         </div>
                     </div>
-                    
-                    <div class="question-info">
-                        Pregunta <span id="current-question-number">0</span> de <span id="total-questions">0</span>
-                    </div>
-                    
-                    <div class="question-text" id="question-display" style="font-size: 20px;">
-                        No hay preguntas cargadas
-                    </div>
-                    
-                    <div id="answers-display">
-                        <!-- Respuestas se cargarán aquí -->
-                    </div>
-                    
-                    <div class="controls-row">
-                        <button id="startButton">Iniciar Escaneo</button>
-                        <button id="stopButton" disabled>Detener Escaneo</button>
-                    </div>
-                    
+                </div>
+                
+                <div class="section camera-section">
                     <div id="videoContainer">
                         <div id="qr-count" class="qr-count" style="display: none;">QRs: 0</div>
                         <video id="video" playsinline autoplay></video>
@@ -579,10 +626,8 @@
                         <!-- Resultados del escaneo se mostrarán aquí -->
                     </div>
                 </div>
-            </div>
-            
-            <div class="mobile-columns">
-                <div class="section" style="flex: 1;">
+                
+                <div class="section pending-section">
                     <div class="section-title">Estudiantes por Responder</div>
                     <div class="student-list" id="pending-students">
                         <!-- Estudiantes pendientes se cargarán aquí -->
@@ -592,12 +637,12 @@
                     </div>
                     <div style="font-size: 16px;">Respondieron: <span id="answered-count">0</span> / <span id="total-students">0</span></div>
                 </div>
-                
-                <div class="section" style="flex: 1;">
-                    <div class="section-title">Estadísticas de la Pregunta</div>
-                    <div class="answer-stats" id="question-stats">
-                        <!-- Estadísticas se cargarán aquí -->
-                    </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">Estadísticas de la Pregunta</div>
+                <div class="answer-stats" id="question-stats">
+                    <!-- Estadísticas se cargarán aquí -->
                 </div>
             </div>
             
@@ -774,6 +819,7 @@
                 questions = [];
                 studentResponses = {};
                 currentQuestionIndex = -1;
+                questionResponses = {}; // Limpiar también las estadísticas de preguntas
                 
                 updateStudentsList();
                 updateQuestionsTable();
@@ -1456,14 +1502,20 @@
             
             let csvContent = "data:text/csv;charset=utf-8,";
             
-            // Encabezados
+            // Encabezados con respuestas correctas en la primera fila
             const headers = ["Número", "Nombre", "Nota (sobre 5)"];
             questions.forEach((q, i) => {
-                headers.push(`P${i+1} (${q.correctAnswer})`);
-                headers.push(`Respuesta P${i+1}`);
+                headers.push(`P${i+1}`);
             });
             
             csvContent += headers.join(",") + "\n";
+            
+            // Segunda fila con respuestas correctas
+            const correctAnswersRow = ["", "", ""];
+            questions.forEach(q => {
+                correctAnswersRow.push(q.correctAnswer);
+            });
+            csvContent += correctAnswersRow.join(",") + "\n";
             
             // Datos de cada estudiante
             students.forEach(student => {
@@ -1475,31 +1527,11 @@
                 studentData.push(score);
                 
                 questions.forEach((q, i) => {
-                    const correct = q.correctAnswer;
-                    
                     const response = studentResponses[student.id] && studentResponses[student.id].responses[i];
                     studentData.push(response || "");
-                    studentData.push(response === correct ? "Correcta" : "Incorrecta");
                 });
                 
                 csvContent += studentData.join(",") + "\n";
-            });
-            
-            // Agregar estadísticas de preguntas
-            csvContent += "\n\nEstadísticas por pregunta\n";
-            csvContent += "Pregunta,Respuesta A,Respuesta B,Respuesta C,Respuesta D,Respuesta Correcta\n";
-            
-            questions.forEach((q, i) => {
-                const stats = { A: 0, B: 0, C: 0, D: 0 };
-                
-                Object.values(studentResponses).forEach(student => {
-                    const answer = student.responses[i];
-                    if (answer && stats.hasOwnProperty(answer)) {
-                        stats[answer]++;
-                    }
-                });
-                
-                csvContent += `"${q.text}",${stats.A},${stats.B},${stats.C},${stats.D},${q.correctAnswer}\n`;
             });
             
             // Descargar archivo
