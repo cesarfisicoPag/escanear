@@ -2,10 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sistema de Evaluación con QR</title>
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-text-size-adjust: 100%;
+        }
+        
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -14,9 +19,13 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            font-size: 16px;
+            line-height: 1.5;
+            -webkit-tap-highlight-color: transparent;
         }
+        
         .container {
-            max-width: 100%;
+            width: 100%;
             margin: 0 auto;
             background: white;
             padding: 15px;
@@ -27,198 +36,269 @@
             grid-template-columns: 1fr;
             grid-gap: 15px;
         }
+        
         .section {
-            padding: 12px;
+            padding: 15px;
             border-radius: 6px;
             background: #f9f9f9;
             margin-bottom: 15px;
         }
+        
         .section-title {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #4285F4;
         }
+        
         #videoContainer {
             position: relative;
-            margin: 8px auto;
+            margin: 10px auto;
             width: 100%;
             max-width: 300px;
         }
+        
         #video {
             width: 100%;
             border-radius: 6px;
             display: block;
             background: #000;
         }
+        
         #canvas {
             display: none;
         }
+        
         button {
             background: #4285F4;
             color: white;
             border: none;
-            padding: 6px 10px;
-            border-radius: 4px;
+            padding: 10px 15px;
+            border-radius: 6px;
             cursor: pointer;
-            font-size: 13px;
-            margin: 2px;
+            font-size: 16px;
+            margin: 5px;
             white-space: nowrap;
+            min-height: 44px;
+            min-width: 44px;
         }
+        
         button:hover {
             background: #3367D6;
         }
+        
         button.secondary {
             background: #f1f1f1;
             color: #333;
         }
+        
         button.secondary:hover {
             background: #ddd;
         }
+        
         button.danger {
             background: #dc3545;
         }
+        
         button.danger:hover {
             background: #c82333;
         }
+        
         button.success {
             background: #28a745;
         }
+        
         button.success:hover {
             background: #218838;
         }
+        
         input, select, textarea {
-            padding: 6px;
-            margin: 4px 0;
+            padding: 12px;
+            margin: 8px 0;
             width: 100%;
             box-sizing: border-box;
             border: 1px solid #ddd;
-            border-radius: 3px;
-            font-size: 14px;
-        }
-        .question-text {
+            border-radius: 6px;
             font-size: 16px;
-            margin: 8px 0;
-            padding: 8px;
-            background: #e8f0fe;
-            border-radius: 4px;
-            transition: font-size 0.3s;
+            min-height: 44px;
         }
-.answer-option {
-            padding: 10px;
-            margin: 5px 0;
+        
+        textarea {
+            min-height: 100px;
+        }
+        
+        .question-text {
+            font-size: 20px;
+            margin: 15px 0;
+            padding: 12px;
+            background: #e8f0fe;
+            border-radius: 8px;
+            line-height: 1.4;
+        }
+        
+        .answer-option {
+            padding: 15px;
+            margin: 10px 0;
             background: #f1f1f1;
-            border-radius: 4px;
-            transition: font-size 0.3s, background-color 0.3s;
+            border-radius: 8px;
+            transition: background-color 0.3s;
             cursor: pointer;
+            font-size: 18px;
         }
         
         .answer-option:hover {
             background-color: #e0e0e0;
         }
+        
         .student-list {
             max-height: 150px;
             overflow-y: auto;
             border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 4px;
-            font-size: 14px;
+            border-radius: 8px;
+            padding: 8px;
+            font-size: 16px;
         }
+        
         .student-item {
-            padding: 4px;
-            margin: 2px 0;
+            padding: 8px;
+            margin: 5px 0;
             background: #f8f9fa;
-            border-radius: 2px;
+            border-radius: 4px;
             display: inline-block;
-            margin-right: 5px;
+            margin-right: 8px;
+            font-size: 16px;
         }
+        
         .student-item.answered {
             text-decoration: line-through;
             color: #6c757d;
         }
+        
         .stats-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 10px;
         }
+        
         .stat-item {
             flex: 1;
-            min-width: 80px;
-            padding: 8px;
+            min-width: 100px;
+            padding: 12px;
             background: #e9ecef;
-            border-radius: 4px;
+            border-radius: 8px;
             text-align: center;
         }
+        
         .stat-value {
-            font-size: 20px;
+            font-size: 24px;
             font-weight: bold;
             color: #4285F4;
         }
+        
         .stat-label {
-            font-size: 11px;
+            font-size: 14px;
             color: #6c757d;
         }
+        
         .progress-container {
             width: 100%;
             background: #e9ecef;
-            border-radius: 4px;
-            margin: 8px 0;
+            border-radius: 8px;
+            margin: 12px 0;
         }
+        
         .progress-bar {
-            height: 15px;
+            height: 20px;
             background: #4285F4;
-            border-radius: 4px;
+            border-radius: 8px;
             width: 0%;
             transition: width 0.3s;
         }
+        
         .ranking-list {
-            max-height: 200px;
+            max-height: 300px;
             overflow-y: auto;
+            font-size: 16px;
         }
+        
         .ranking-item {
             display: flex;
             justify-content: space-between;
-            padding: 6px;
+            padding: 12px;
             border-bottom: 1px solid #eee;
-            font-size: 14px;
+            align-items: center;
         }
+        
         .ranking-position {
             font-weight: bold;
             color: #4285F4;
+            font-size: 18px;
+            min-width: 40px;
         }
+        
+        .ranking-info {
+            flex-grow: 1;
+            padding: 0 10px;
+        }
+        
+        .ranking-score {
+            font-weight: bold;
+            min-width: 80px;
+            text-align: right;
+        }
+        
+        .current-answer {
+            background-color: #e8f0fe;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 5px;
+            font-weight: bold;
+        }
+        
         .answer-stats {
             display: flex;
             justify-content: space-around;
-            margin-top: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
         }
+        
         .answer-stat {
             text-align: center;
-            padding: 4px;
+            padding: 8px;
             flex: 1;
+            min-width: 25%;
         }
+        
         .answer-letter {
             font-weight: bold;
+            font-size: 20px;
         }
+        
         .answer-count {
-            font-size: 16px;
+            font-size: 20px;
         }
+        
         .controls-row {
             display: flex;
             justify-content: space-between;
-            margin: 8px 0;
+            margin: 12px 0;
             align-items: center;
             flex-wrap: wrap;
         }
+        
         .text-size-control {
             display: flex;
             align-items: center;
-            width: 130px;
-            margin-top: 5px;
+            width: 100%;
+            margin: 10px 0;
         }
+        
         .text-size-control input {
-            margin: 0 5px;
+            margin: 0 10px;
             flex-grow: 1;
+            padding: 0;
         }
+        
         .scanning-overlay {
             position: absolute;
             top: 0;
@@ -230,93 +310,126 @@
             box-sizing: border-box;
             animation: pulse 2s infinite;
         }
+        
         @keyframes pulse {
             0% { border-color: rgba(0, 255, 0, 0.5); }
             50% { border-color: rgba(0, 255, 0, 0.8); }
             100% { border-color: rgba(0, 255, 0, 0.5); }
         }
+        
         .tab-container {
             display: flex;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
         }
+        
         .tab {
-            padding: 6px 12px;
+            padding: 10px 15px;
             background: #e9ecef;
-            margin-right: 4px;
-            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+            border-radius: 8px 8px 0 0;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 16px;
         }
+        
         .tab.active {
             background: #4285F4;
             color: white;
         }
+        
         .tab-content {
             display: none;
         }
+        
         .tab-content.active {
             display: block;
         }
+        
         .file-input {
             display: none;
         }
+        
         .file-label {
             display: inline-block;
-            padding: 6px 10px;
+            padding: 12px 15px;
             background: #6c757d;
             color: white;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
-            margin: 4px 0;
-            font-size: 14px;
+            margin: 8px 0;
+            font-size: 16px;
+            text-align: center;
         }
+        
         .file-label:hover {
             background: #5a6268;
         }
+        
         #scan-result {
-            min-height: 40px;
-            padding: 8px;
+            min-height: 60px;
+            padding: 12px;
             background: #f8f9fa;
-            border-radius: 4px;
-            margin-top: 8px;
-            font-size: 14px;
+            border-radius: 8px;
+            margin-top: 12px;
+            font-size: 16px;
         }
+        
         .questions-responses {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 14px;
+            margin-top: 15px;
+            font-size: 16px;
         }
+        
         .questions-responses th, .questions-responses td {
             border: 1px solid #ddd;
-            padding: 6px;
+            padding: 12px;
             text-align: left;
         }
+        
         .questions-responses th {
             background-color: #f2f2f2;
         }
+        
         .qr-count {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: 8px;
+            right: 8px;
             background: rgba(0,0,0,0.7);
             color: white;
-            padding: 3px 6px;
-            border-radius: 3px;
-            font-size: 12px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 16px;
             z-index: 10;
         }
+        
+        .question-info {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        
+        .mobile-columns {
+            display: flex;
+            flex-direction: column;
+        }
+        
         @media (min-width: 768px) {
             .container {
                 grid-template-columns: 1fr 1fr;
                 padding: 20px;
                 grid-gap: 20px;
             }
-            .section {
-                padding: 15px;
+            
+            .mobile-columns {
+                flex-direction: row;
+                flex-wrap: wrap;
             }
-            #videoContainer {
-                max-width: 400px;
+            
+            .mobile-columns > div {
+                flex: 1;
+                min-width: 300px;
             }
         }
     </style>
@@ -406,7 +519,7 @@
                         </div>
                         <div class="text-size-control">
                             <button onclick="decreaseTextSize()" class="secondary">A-</button>
-                            <input type="range" id="text-size-slider" min="12" max="36" value="18" step="2" oninput="updateTextSize(this.value)">
+                            <input type="range" id="text-size-slider" min="16" max="36" value="20" step="2" oninput="updateTextSize(this.value)">
                             <button onclick="increaseTextSize()" class="secondary">A+</button>
                         </div>
                     </div>
@@ -415,7 +528,7 @@
                         Pregunta <span id="current-question-number">0</span> de <span id="total-questions">0</span>
                     </div>
                     
-                    <div class="question-text" id="question-display" style="font-size: 18px;">
+                    <div class="question-text" id="question-display" style="font-size: 20px;">
                         No hay preguntas cargadas
                     </div>
                     
@@ -441,21 +554,23 @@
                 </div>
             </div>
             
-            <div class="section">
-                <div class="section-title">Estudiantes por Responder</div>
-                <div class="student-list" id="pending-students">
-                    <!-- Estudiantes pendientes se cargarán aquí -->
+            <div class="mobile-columns">
+                <div class="section" style="flex: 1;">
+                    <div class="section-title">Estudiantes por Responder</div>
+                    <div class="student-list" id="pending-students">
+                        <!-- Estudiantes pendientes se cargarán aquí -->
+                    </div>
+                    <div class="progress-container">
+                        <div class="progress-bar" id="response-progress"></div>
+                    </div>
+                    <div style="font-size: 16px;">Respondieron: <span id="answered-count">0</span> / <span id="total-students">0</span></div>
                 </div>
-                <div class="progress-container">
-                    <div class="progress-bar" id="response-progress"></div>
-                </div>
-                <div>Respondieron: <span id="answered-count">0</span> / <span id="total-students">0</span></div>
-            </div>
-            
-            <div class="section">
-                <div class="section-title">Estadísticas de la Pregunta</div>
-                <div class="answer-stats" id="question-stats">
-                    <!-- Estadísticas se cargarán aquí -->
+                
+                <div class="section" style="flex: 1;">
+                    <div class="section-title">Estadísticas de la Pregunta</div>
+                    <div class="answer-stats" id="question-stats">
+                        <!-- Estadísticas se cargarán aquí -->
+                    </div>
                 </div>
             </div>
             
@@ -525,7 +640,7 @@
             document.getElementById('stopButton').addEventListener('click', stopCamera);
             
             // Configurar tamaño de texto inicial
-            updateTextSize(18);
+            updateTextSize(20);
         });
         
         // Funciones de gestión de pestañas
@@ -857,7 +972,7 @@
             }
         }
         
-              function updateQuestionDisplay() {
+        function updateQuestionDisplay() {
             const questionDisplay = document.getElementById('question-display');
             const answersDisplay = document.getElementById('answers-display');
             const currentQuestionNumber = document.getElementById('current-question-number');
@@ -893,7 +1008,8 @@
             updatePendingStudents();
             updateQuestionStats();
         }
-               function increaseTextSize() {
+        
+        function increaseTextSize() {
             const slider = document.getElementById('text-size-slider');
             const newSize = parseInt(slider.value) + 2;
             if (newSize <= parseInt(slider.max)) {
@@ -1258,11 +1374,14 @@
             // Crear array de estudiantes con sus puntajes
             const rankedStudents = students.map(student => {
                 const score = studentResponses[student.id] ? studentResponses[student.id].score : 0;
+                const currentAnswer = studentResponses[student.id] && studentResponses[student.id].responses[currentQuestionIndex];
+                
                 return {
                     id: student.id,
                     number: student.number,
                     name: student.name,
-                    score: score
+                    score: score,
+                    currentAnswer: currentAnswer
                 };
             });
             
@@ -1279,9 +1398,19 @@
                 position.textContent = `#${index + 1}`;
                 
                 const info = document.createElement('span');
+                info.className = 'ranking-info';
                 info.textContent = `${student.number}: ${student.name}`;
                 
+                // Mostrar respuesta actual si existe
+                if (student.currentAnswer) {
+                    const answerSpan = document.createElement('span');
+                    answerSpan.className = 'current-answer';
+                    answerSpan.textContent = student.currentAnswer;
+                    info.appendChild(answerSpan);
+                }
+                
                 const score = document.createElement('span');
+                score.className = 'ranking-score';
                 score.textContent = `${student.score.toFixed(2)}/5`;
                 
                 item.appendChild(position);
