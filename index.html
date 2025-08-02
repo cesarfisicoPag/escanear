@@ -136,6 +136,36 @@
     gap: 10px;            
     align-items: center;   
 }
+.controls-container {
+    display: flex;
+    flex-direction: column;  /* Apila los elementos verticalmente */
+    gap: 10px;               /* Espacio entre los grupos de botones */
+    width: 100%;
+}
+
+.navigation-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center; /* Centra los botones horizontalmente */
+}
+
+.text-size-control {
+    display: flex;
+    align-items: center;    /* Centra verticalmente los elementos */
+    gap: 10px;
+    width: 100%;
+}
+
+/* Estilos para los botones individuales (opcional) */
+.navigation-buttons button,
+.text-size-control button {
+    flex: 1;                /* Hace que los botones se expandan igualmente */
+    max-width: 150px;       /* Ancho máximo para evitar que se estiren demasiado */
+}
+
+.text-size-control input[type="range"] {
+    flex: 2;                /* Da más espacio al slider */
+}
         .question-text {
             font-size: 20px;
             margin: 15px 0;
@@ -585,19 +615,18 @@
                     <div id="current-question-container">
                         <div class="controls-row">
                             <div>
-<div class="navigation-buttons">
-
-                                <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
-                                <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
-                            </div>
-                            </div>
-                            <div class="text-size-control">
-                                <button onclick="decreaseTextSize()" class="secondary">A-</button>
-                                <input type="range" id="text-size-slider" min="16" max="36" value="20" step="2" oninput="updateTextSize(this.value)">
-                                <button onclick="increaseTextSize()" class="secondary">A+</button>
-                            </div>
-                        </div>
-                        
+<div class="controls-container"> <!-- Contenedor principal agregado -->
+    <div class="navigation-buttons">
+        <button id="prev-question" onclick="prevQuestion()" class="secondary">← Anterior</button>
+        <button id="next-question" onclick="nextQuestion()" class="secondary">Siguiente →</button>
+    </div>
+    
+    <div class="text-size-control">
+        <button onclick="decreaseTextSize()" class="secondary">A-</button>
+        <input type="range" id="text-size-slider" min="16" max="36" value="20" step="2" oninput="updateTextSize(this.value)">
+        <button onclick="increaseTextSize()" class="secondary">A+</button>
+    </div>
+</div>                        
                         <div class="question-info">
                             Pregunta <span id="current-question-number">0</span> de <span id="total-questions">0</span>
                         </div>
