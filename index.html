@@ -442,8 +442,8 @@
             width: 100%;
         }
         
-        /* Nueva clase para el layout optimizado */
-        .evaluation-layout {
+        /* Nuevo diseño para la sección de evaluación */
+        .evaluation-section {
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -453,13 +453,22 @@
             order: 1;
         }
         
-        .camera-section {
+        .camera-pending-container {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
             order: 2;
-            margin: 0 auto;
+        }
+        
+        .camera-section {
+            flex: 1;
+            min-width: 150px;
+            margin: 0;
         }
         
         .pending-section {
-            order: 3;
+            flex: 2;
+            margin: 0;
         }
         
         @media (min-width: 768px) {
@@ -480,26 +489,25 @@
                 min-width: 300px;
             }
             
-            .evaluation-layout {
-                display: grid;
-                grid-template-areas:
-                    "question question"
-                    "camera pending";
-                grid-template-columns: 1fr 1fr;
+            .evaluation-section {
+                display: flex;
+                flex-direction: column;
                 gap: 10px;
             }
             
-            .question-section {
-                grid-area: question;
+            .camera-pending-container {
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
             }
             
             .camera-section {
-                grid-area: camera;
-                margin: 0;
+                flex: 1;
+                min-width: 150px;
             }
             
             .pending-section {
-                grid-area: pending;
+                flex: 2;
             }
         }
     </style>
@@ -579,7 +587,7 @@
         </div>
         
         <div class="right-column">
-            <div class="section evaluation-layout">
+            <div class="section evaluation-section">
                 <div class="section question-section">
                     <div class="section-title">Evaluación</div>
                     <div id="current-question-container">
@@ -614,28 +622,30 @@
                     </div>
                 </div>
                 
-                <div class="section camera-section">
-                    <div id="videoContainer">
-                        <div id="qr-count" class="qr-count" style="display: none;">QRs: 0</div>
-                        <video id="video" playsinline autoplay></video>
-                        <canvas id="canvas"></canvas>
-                        <div class="scanning-overlay"></div>
+                <div class="camera-pending-container">
+                    <div class="section camera-section">
+                        <div id="videoContainer">
+                            <div id="qr-count" class="qr-count" style="display: none;">QRs: 0</div>
+                            <video id="video" playsinline autoplay></video>
+                            <canvas id="canvas"></canvas>
+                            <div class="scanning-overlay"></div>
+                        </div>
+                        
+                        <div id="scan-result">
+                            <!-- Resultados del escaneo se mostrarán aquí -->
+                        </div>
                     </div>
                     
-                    <div id="scan-result">
-                        <!-- Resultados del escaneo se mostrarán aquí -->
+                    <div class="section pending-section">
+                        <div class="section-title">Estudiantes por Responder</div>
+                        <div class="student-list" id="pending-students">
+                            <!-- Estudiantes pendientes se cargarán aquí -->
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" id="response-progress"></div>
+                        </div>
+                        <div style="font-size: 16px;">Respondieron: <span id="answered-count">0</span> / <span id="total-students">0</span></div>
                     </div>
-                </div>
-                
-                <div class="section pending-section">
-                    <div class="section-title">Estudiantes por Responder</div>
-                    <div class="student-list" id="pending-students">
-                        <!-- Estudiantes pendientes se cargarán aquí -->
-                    </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" id="response-progress"></div>
-                    </div>
-                    <div style="font-size: 16px;">Respondieron: <span id="answered-count">0</span> / <span id="total-students">0</span></div>
                 </div>
             </div>
             
